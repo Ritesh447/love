@@ -1,458 +1,416 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Love Surprise — For My Bestie ❤️</title>
+<title>Love Tree — For My Bestie ❤️</title>
 <style>
   :root{
-    --bg1:#05040a; --bg2:#0b1220; --accent:#ff4d6d; --soft:#ff9bb3; --gold:#ffd166;
+    --bg1:#05040a; --accent:#ff4d6d; --soft:#ff9bb3; --glow:rgba(255,77,109,0.18);
   }
-  html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial; background:var(--bg1); color:#fff; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
-  /* full screen stage */
-  .stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:18px;box-sizing:border-box;flex-direction:column;gap:18px;z-index:1}
-  .card{width:100%;max-width:1060px;margin:0 auto;padding:18px;border-radius:16px;box-shadow:0 30px 80px rgba(7,8,14,0.7);background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03)}
-  header{display:flex;justify-content:space-between;align-items:center;gap:12px}
-  h1{margin:0;font-size:20px;letter-spacing:0.4px}
-  p.desc{margin:4px 0 0 0;font-size:13px;color:rgba(255,255,255,0.75)}
-  .playBtn{background:linear-gradient(90deg,var(--accent),#ff7a88);border:none;padding:12px 20px;border-radius:999px;color:white;font-weight:700;cursor:pointer;box-shadow:0 10px 30px rgba(255,77,109,0.18);font-size:16px}
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:radial-gradient(ellipse at bottom, #08101a 0%, #020209 100%);font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color:#fff;overflow:hidden}
+  /* star background (simple) */
+  .stars{position:fixed;inset:0;z-index:-4;pointer-events:none;background:
+    radial-gradient(circle at 10% 20%, rgba(255,255,255,.06) 1px, transparent 1px),
+    radial-gradient(circle at 80% 40%, rgba(255,255,255,.04) 1px, transparent 1px),
+    radial-gradient(circle at 40% 70%, rgba(255,255,255,.05) 1px, transparent 1px);
+    background-size: 120px 120px, 180px 180px, 140px 140px;
+    opacity:.95;filter:contrast(120%);}
+  /* slow vignette for mood */
+  .vignette{position:fixed;inset:0;z-index:-3;pointer-events:none;background:radial-gradient(ellipse at center, rgba(255,50,90,0.02), rgba(0,0,0,0.6));}
+  /* shooting star */
+  .shoot{position:fixed;left:-20%;top:12%;width:260px;height:2px;background:linear-gradient(90deg, rgba(255,255,255,.95), rgba(255,255,255,0));opacity:0;transform:rotate(-25deg);z-index:-2;pointer-events:none;filter:blur(1px);}
+
+  /* falling hearts layer */
+  .falling{position:fixed;inset:0;pointer-events:none;z-index:-2}
+
+  /* page stage */
+  .stage{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px}
+  .panel{width:100%;max-width:1100px;padding:16px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 40px 120px rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.03);backdrop-filter: blur(6px)}
+  header{display:flex;align-items:center;justify-content:space-between;gap:16px}
+  h1{margin:0;font-size:20px}
+  .desc{opacity:.85;font-size:13px;margin-top:6px}
+
+  .playBtn{background:linear-gradient(90deg,var(--accent),#ff7a88);border:none;padding:12px 18px;border-radius:999px;color:white;font-weight:700;cursor:pointer;box-shadow:0 12px 40px var(--glow);font-size:15px}
   .playBtn:active{transform:scale(.99)}
 
-  /* starfield: many tiny dots via box-shadow trick for performance */
-  .starfield{position:fixed;inset:0;z-index:-4;background:radial-gradient(ellipse at bottom, rgba(10,10,20,0.6) 0%, rgba(5,5,12,1) 60%);}
-  .stars{position:absolute;inset:0;opacity:0.9;filter:contrast(120%);}
-  .stars::before{
-    content:"";
-    position:absolute;inset:0;
-    background:
-      radial-gradient(2px 2px at 10% 20%, rgba(255,255,255,0.95), transparent),
-      radial-gradient(1.5px 1.5px at 20% 70%, rgba(255,255,255,0.85), transparent),
-      radial-gradient(1.3px 1.3px at 35% 35%, rgba(255,255,255,0.9), transparent),
-      radial-gradient(1px 1px at 60% 20%, rgba(255,255,255,0.8), transparent),
-      radial-gradient(1.7px 1.7px at 80% 60%, rgba(255,255,255,0.88), transparent),
-      radial-gradient(1px 1px at 90% 10%, rgba(255,255,255,0.7), transparent);
-    background-repeat:repeat;
-    background-size: 100px 100px;
-    animation: twinkle 6s linear infinite;
-  }
-  @keyframes twinkle{50%{opacity:.7}100%{opacity:1}}
-
-  /* shooting star */
-  .shoot{position:fixed;z-index:-3;left:-10%;top:10%;opacity:0;transform:rotate(-30deg);filter:drop-shadow(0 6px 14px rgba(255,255,255,0.08));}
-  .shoot .tail{width:220px;height:2px;background:linear-gradient(90deg, rgba(255,255,255,0.95), rgba(255,255,255,0));box-shadow:0 0 18px rgba(255,255,255,0.4);}
-
-  /* falling decorative hearts */
-  .fallingLayer{position:fixed;inset:0;pointer-events:none;z-index:-2}
-  .fheart{position:absolute;font-size:20px;filter:drop-shadow(0 6px 18px rgba(255,20,100,0.12));opacity:0.95;transform-origin:center}
-
-  /* tree area */
-  .tree-area{display:flex;align-items:center;justify-content:center;padding:30px 0}
-  .tree-wrap{position:relative;width:720px;max-width:92vw;height:560px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:20px;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 -40px 120px rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.03)}
+  /* tree container */
+  .tree-wrap{position:relative;margin-top:18px;height:66vh;max-height:760px;display:flex;align-items:center;justify-content:center}
+  .tree-card{width:92%;max-width:900px;height:92%;background:transparent;border-radius:14px;display:flex;align-items:center;justify-content:center;position:relative}
   svg.tree{width:86%;height:86%}
 
-  /* trunk + branches draw animation */
-  .draw { stroke:#3b2b19; stroke-width:6; fill:none; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:2000; stroke-dashoffset:2000; animation: drawLine 2.6s ease forwards; }
-  .draw.delay { animation-delay:0.25s }
-  @keyframes drawLine { to { stroke-dashoffset:0 } }
+  /* tree silhouette style (glow) */
+  .tree-outline{stroke:#ffffff;stroke-opacity:.95;stroke-width:3;fill:none;filter:drop-shadow(0 12px 40px rgba(255,77,109,0.12));}
+  .tree-fill{fill:rgba(255,255,255,0.02);}
 
-  /* heart nodes container (absolute) */
-  .node-layer{position:absolute;inset:0;pointer-events:none}
+  /* small hearts scattered on branches */
+  .small-heart{
+    position:absolute;pointer-events:none;font-size:12px;color:var(--accent);opacity:.95;transform-origin:center;
+    text-shadow:0 6px 18px rgba(255,77,109,0.12);
+    animation:smallPulse 2.4s ease-in-out infinite;
+  }
+  @keyframes smallPulse{0%{transform:scale(.85)}50%{transform:scale(1.07)}100%{transform:scale(.85)}}
 
-  .node { position:absolute; pointer-events:auto; cursor:pointer; width:48px; height:48px; display:flex; align-items:center; justify-content:center; font-size:26px; background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.06), rgba(255,255,255,0.02)); border-radius:50%; box-shadow:0 10px 30px rgba(255,77,109,0.12); transition: transform .22s ease, box-shadow .22s; }
-  .node:hover{ transform:scale(1.08) }
-  .node .h{ color:var(--accent); text-shadow:0 6px 20px rgba(255,77,109,0.18); filter: drop-shadow(0 8px 18px rgba(255,77,109,0.12)); font-size:22px; }
-  .node.pulse { animation: pop 1.4s infinite; }
-  @keyframes pop { 0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)} }
+  /* big hanging hearts */
+  .big-heart{
+    position:absolute;width:72px;height:72px;border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:34px;color:var(--accent);
+    background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+    box-shadow:0 20px 50px rgba(255,77,109,0.12);cursor:pointer;transition:transform .18s, box-shadow .18s;
+    transform-origin:center top;
+  }
+  .big-heart .h{filter:drop-shadow(0 8px 20px rgba(255,20,100,0.14));}
+  /* swing */
+  .swing{animation:swingAnim 3.6s ease-in-out infinite}
+  @keyframes swingAnim{0%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}100%{transform:rotate(-6deg)}}
+  .big-heart:active{transform:scale(.97)}
 
-  /* question modal */
-  .modal{position:fixed;left:50%;top:70%;transform:translate(-50%,-50%);width:92%;max-width:480px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));padding:16px;border-radius:12px;box-shadow:0 18px 50px rgba(0,0,0,0.6);z-index:40;border:1px solid rgba(255,255,255,0.04);display:none;}
-  .q{font-weight:800;font-size:18px;margin-bottom:10px}
+  /* modal question */
+  .modal{position:fixed;left:50%;top:72%;transform:translate(-50%,-50%);min-width:320px;max-width:520px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:12px;box-shadow:0 20px 50px rgba(0,0,0,0.6);z-index:60;border:1px solid rgba(255,255,255,0.03);display:none}
+  .qtxt{font-weight:800;margin-bottom:10px}
   .opts{display:flex;gap:12px}
-  .btnOpt{flex:1;padding:12px;border-radius:10px;cursor:pointer;text-align:center;font-weight:700;border:1px solid rgba(255,255,255,0.03);background:rgba(255,255,255,0.02)}
-  .btnOpt.primary{background:linear-gradient(90deg,var(--accent),#ff7a88);color:white;border:none}
-  .btnOpt.dodge{position:relative;transition:all .18s ease}
+  .opt{flex:1;padding:10px;border-radius:10px;text-align:center;font-weight:700;cursor:pointer;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)}
+  .opt.primary{background:linear-gradient(90deg,var(--accent),#ff7a88);color:#fff;border:none;box-shadow:0 12px 36px rgba(255,77,109,0.12)}
+  .opt.dodge{position:relative;transition:transform .12s ease}
 
-  /* burning overlay */
-  .burnOverlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:radial-gradient(circle at center, rgba(255,120,140,0.06), rgba(0,0,0,0.6));z-index:80}
-  .burnHeart{font-size:140px;animation:burnPop 2.2s cubic-bezier(.2,.9,.2,1) forwards}
-  @keyframes burnPop{0%{transform:scale(.6);opacity:1;text-shadow:0 0 28px rgba(255,90,120,0.9)}60%{transform:scale(1.1);opacity:1}100%{transform:scale(2.6);opacity:0;filter:blur(8px)}}
+  /* burn overlay */
+  .burn{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:radial-gradient(circle at center, rgba(255,120,140,0.04), rgba(0,0,0,0.6));z-index:90}
+  .burn .heart{font-size:120px;animation:burnAnim 2.4s cubic-bezier(.2,.9,.2,1) forwards}
+  @keyframes burnAnim{0%{transform:scale(.8);opacity:1}50%{transform:scale(1.05);opacity:1}100%{transform:scale(2.6);opacity:0;filter:blur(8px)}}
 
-  /* reveal area */
-  .reveal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;gap:18px;z-index:85;padding:28px}
-  .revealPanel{width:100%;max-width:980px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:16px;padding:18px;backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.03);display:flex;gap:18px;align-items:center;justify-content:center;flex-wrap:wrap}
-  .big{width:52%;max-width:520px;border-radius:14px;box-shadow:0 30px 80px rgba(0,0,0,0.6);transform-origin:center;transition:transform .5s cubic-bezier(.2,.9,.2,1)}
-  .small{width:38%;max-width:360px;border-radius:12px;display:flex;gap:12px;flex-direction:column}
-  .small img, .big img{width:100%;height:auto;border-radius:12px;object-fit:cover;box-shadow:0 20px 60px rgba(0,0,0,0.45)}
-  .finalLine{font-size:20px;color:var(--soft);text-shadow:0 0 28px rgba(255,0,80,0.12);font-weight:700;text-align:center}
+  /* reveal */
+  .reveal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:100;padding:28px}
+  .revealPanel{width:100%;max-width:1000px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:14px;padding:18px;display:flex;gap:18px;align-items:center;justify-content:center;flex-wrap:wrap;backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,0.03)}
+  .bigImg{width:52%;max-width:520px;border-radius:14px;box-shadow:0 30px 80px rgba(0,0,0,0.6);transform-origin:center;transition:transform .5s}
+  .sideImgs{width:38%;display:flex;flex-direction:column;gap:14px}
+  .sideImgs img{width:100%;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,0.45)}
+  .final-line{font-weight:800;text-align:center;font-size:20px;color:var(--soft);text-shadow:0 0 20px rgba(255,0,80,0.08);margin-top:6px}
 
-  /* floating I ❤️ U bubbles */
-  .floaters{position:fixed;inset:0;pointer-events:none;z-index:86}
-  .floater{position:absolute;font-size:22px;color:var(--accent);opacity:0.95;filter:drop-shadow(0 8px 16px rgba(255,20,100,0.12));animation:floatUp linear infinite}
-  @keyframes floatUp{0%{transform:translateY(40px);opacity:0}20%{opacity:1}100%{transform:translateY(-140px);opacity:0}}
+  /* floating 'I ❤️ U' */
+  .floater{position:absolute;pointer-events:none;font-weight:800;color:var(--accent);opacity:.95;filter:drop-shadow(0 8px 20px rgba(255,20,100,0.12))}
 
   /* responsive */
   @media (max-width:720px){
-    .tree-wrap{height:66vh}
-    .big{width:92%}
-    .small{width:92%}
+    .tree-wrap{height:60vh}
+    .bigImg{width:92%}
+    .sideImgs{width:92%}
   }
 </style>
 </head>
 <body>
-  <!-- decorative layers -->
-  <div class="starfield"><div class="stars"></div></div>
+  <div class="stars"></div>
+  <div class="vignette"></div>
   <div class="shoot" id="shoot"><div class="tail"></div></div>
-  <div class="fallingLayer" id="fallingLayer"></div>
-  <div class="floaters" id="floaters"></div>
+  <div class="falling" id="falling"></div>
 
-  <!-- main UI -->
   <div class="stage">
-    <div class="card" role="main" aria-label="Love Surprise">
+    <div class="panel" role="main">
       <header>
         <div>
-          <h1>For my bestie ❤️</h1>
-          <p class="desc">Tap a heart on the tree and answer — a sweet surprise will follow.</p>
+          <h1>For my Bestie ❤️</h1>
+          <div class="desc">Tap any hanging heart on the tree and answer — a surprise awaits.</div>
         </div>
         <div>
-          <button class="playBtn" id="playBtn">▶ Play (Janemann) — 1.5x</button>
+          <button class="playBtn" id="manualPlay">▶ Play (1.25x)</button>
         </div>
       </header>
 
-      <div class="tree-area" style="margin-top:14px">
-        <div class="tree-wrap" id="treeWrap">
-          <!-- SVG Tree (drawn via CSS animation) -->
-          <svg class="tree" viewBox="0 0 420 520" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-            <!-- trunk -->
-            <path class="draw delay" d="M210 500 C210 420 210 360 210 320
-              C190 280 170 260 150 230
-              C130 200 120 170 140 150
-              C170 120 200 110 230 105
-              C265 100 290 110 315 140
-              C340 170 355 200 375 230
-              C395 260 410 300 380 330
-              C350 360 320 370 300 390" />
-            <!-- branch -->
-            <path class="draw" d="M210 300 C178 280 148 250 130 220" />
-            <path class="draw" d="M260 240 C300 220 340 200 360 170" />
+      <div class="tree-wrap" id="treeWrap">
+        <div class="tree-card" id="treeCard">
+          <!-- SVG tree silhouette (full shape) -->
+          <svg class="tree" viewBox="0 0 500 620" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+            <!-- soft fill shadow behind -->
+            <path d="M250 600 C250 520 250 440 250 390 C220 360 180 340 160 300 C140 260 120 220 140 180 C170 140 210 120 250 110 C290 100 330 118 360 150 C390 182 420 220 410 260 C400 300 370 340 350 360 C330 380 300 400 270 420 C250 440 250 520 250 600 Z"
+                  class="tree-fill"/>
+            <!-- outline -->
+            <path d="M250 600 C250 520 250 440 250 390 C220 360 180 340 160 300 C140 260 120 220 140 180 C170 140 210 120 250 110 C290 100 330 118 360 150 C390 182 420 220 410 260 C400 300 370 340 350 360 C330 380 300 400 270 420 C250 440 250 520 250 600 Z"
+                  class="tree-outline"/>
+            <!-- branches extra -->
+            <path d="M180 320 C130 300 110 260 120 220" class="tree-outline"/>
+            <path d="M320 300 C370 280 410 260 420 230" class="tree-outline"/>
+            <path d="M220 240 C210 200 180 170 160 150" class="tree-outline"/>
+            <path d="M280 240 C290 200 320 170 350 150" class="tree-outline"/>
           </svg>
 
-          <!-- Node hearts overlay (positioned by JS) -->
-          <div class="node-layer" id="nodeLayer" aria-hidden="false"></div>
+          <!-- small hearts scattered by JS -->
+          <!-- big hanging hearts (4) -->
+          <div class="big-heart swing" id="B1" style="left:40%; top:34%; transform-origin:center top;"><div class="h">❤️</div></div>
+          <div class="big-heart swing" id="B2" style="left:30%; top:44%; transform-origin:center top;"><div class="h">❤️</div></div>
+          <div class="big-heart swing" id="B3" style="left:55%; top:40%; transform-origin:center top;"><div class="h">❤️</div></div>
+          <div class="big-heart swing" id="B4" style="left:48%; top:50%; transform-origin:center top;"><div class="h">❤️</div></div>
 
+          <!-- container for many small hearts -->
+          <div id="smallContainer" style="position:absolute;inset:0;pointer-events:none"></div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- modal -->
+  <!-- modal question -->
   <div class="modal" id="modal" role="dialog" aria-modal="true">
-    <div class="q" id="qtxt"></div>
+    <div class="qtxt" id="qtxt"></div>
     <div class="opts">
-      <div class="btnOpt" id="optA"></div>
-      <div class="btnOpt primary" id="optB"></div>
+      <div class="opt" id="opt1"></div>
+      <div class="opt primary" id="opt2"></div>
     </div>
   </div>
 
-  <!-- burning overlay -->
-  <div class="burnOverlay" id="burnOverlay"><div class="burnHeart">❤️🔥</div></div>
+  <!-- burn overlay -->
+  <div class="burn" id="burn"><div class="heart">❤️🔥</div></div>
 
-  <!-- reveal area -->
+  <!-- reveal -->
   <div class="reveal" id="reveal">
     <div class="revealPanel">
-      <div class="big"><img id="bigImg" src="pic2.jpg" alt="Picture" /></div>
-      <div class="small">
-        <img id="small1" src="pic1.jpg" alt="pic1" />
-        <div class="finalLine" id="finalLine">Your beauty shines brighter than every star, my precious friend ❤️</div>
+      <div class="bigImg" id="bigImgWrap"><img id="bigImg" src="pic2.jpg" alt="pic2" style="width:100%;display:block;border-radius:12px"></div>
+      <div class="sideImgs">
+        <img id="side1" src="pic1.jpg" alt="pic1">
+        <div class="final-line" id="finalLine">Your beauty shines brighter than every star, my precious friend ❤️</div>
       </div>
     </div>
   </div>
+
+  <!-- floating I❤️U layer -->
+  <div id="floaters" style="position:fixed;inset:0;pointer-events:none;z-index:95"></div>
 
   <!-- audio -->
   <audio id="audio" src="song.mp3" preload="auto"></audio>
 
 <script>
-/* ========== Setup & autoplay ========== */
+/* ---------- Autoplay & playbackRate ---------- */
 const audio = document.getElementById('audio');
-audio.playbackRate = 1.5;
-audio.volume = 0.75;
+audio.playbackRate = 1.25;
+audio.volume = 0.78;
 
-// Try autoplay (some browsers block; fallback on first interaction)
-function tryPlay(){
-  audio.play().catch(()=>{/*blocked*/});
+// try autoplay; fallback to first user interaction
+function tryPlayOnce(){
+  audio.play().catch(()=>{/* blocked by browser */});
 }
-window.addEventListener('load', ()=> {
-  tryPlay();
-});
-// fallback: play on any first user interaction if blocked
-function enableOnFirstInteraction(){
-  tryPlay();
-  window.removeEventListener('click', enableOnFirstInteraction);
-  window.removeEventListener('touchstart', enableOnFirstInteraction);
-}
-window.addEventListener('click', enableOnFirstInteraction);
-window.addEventListener('touchstart', enableOnFirstInteraction);
+window.addEventListener('load', ()=> { tryPlayOnce(); });
+function onFirstInteraction(){ tryPlayOnce(); window.removeEventListener('click', onFirstInteraction); window.removeEventListener('touchstart', onFirstInteraction); }
+window.addEventListener('click', onFirstInteraction); window.addEventListener('touchstart', onFirstInteraction);
 
-/* ========== shooting star schedule ========== */
+// manual play button as extra
+document.getElementById('manualPlay').addEventListener('click', ()=> { tryPlayOnce(); });
+
+/* ---------- shooting star occasional ---------- */
 const shoot = document.getElementById('shoot');
-function runShootingStar(){
+function runShoot(){
   shoot.style.opacity = 1;
-  shoot.style.left = '-15%';
-  shoot.style.top = (10 + Math.random()*30) + '%';
-  shoot.style.transition = 'transform 1.2s linear, left 1.2s linear, opacity .6s';
-  shoot.style.transform = 'translateX(140vw) rotate(-30deg)';
-  setTimeout(()=> {
-    shoot.style.opacity = 0;
-    shoot.style.transform = 'translateX(0)';
-  },1300);
+  shoot.style.left = '-20%';
+  shoot.style.top = (8 + Math.random()*40) + '%';
+  shoot.style.transition = 'left 1.1s linear, opacity .8s';
+  shoot.style.left = '120%';
+  setTimeout(()=> { shoot.style.opacity = 0; shoot.style.left='-20%'; }, 1300);
 }
-setInterval(()=> { if(Math.random() < 0.6) runShootingStar(); }, 6000);
+setInterval(()=> { if(Math.random()<0.6) runShoot(); }, 5200);
 
-/* ========== floating hearts (decor) ========== */
-const fallingLayer = document.getElementById('fallingLayer');
-function spawnFloatingHeart(){
-  const el = document.createElement('div');
-  el.className = 'fheart';
-  el.innerText = '❤️';
-  const size = 14 + Math.random()*28;
-  el.style.fontSize = size + 'px';
-  el.style.left = (5 + Math.random()*90) + 'vw';
-  el.style.top = (-10 - Math.random()*6) + 'vh';
+/* ---------- falling hearts decorative ---------- */
+const falling = document.getElementById('falling');
+function spawnFall(){
+  const el = document.createElement('div'); el.className='fheart'; el.innerText='❤️';
+  const size = 14 + Math.random()*30; el.style.fontSize = size+'px';
+  el.style.left = (5 + Math.random()*90)+'vw';
+  el.style.top = '-8vh';
+  el.style.opacity = (0.6 + Math.random()*0.4);
   const dur = 5 + Math.random()*6;
   el.style.transition = `transform ${dur}s linear, top ${dur}s linear, opacity ${dur}s`;
-  fallingLayer.appendChild(el);
-  requestAnimationFrame(()=> {
-    el.style.top = (110 + Math.random()*10) + 'vh';
-    el.style.transform = `translateY(${window.innerHeight}px) rotate(${Math.random()*360}deg)`;
-    el.style.opacity = 0;
-  });
-  setTimeout(()=> el.remove(), (dur*1000)+200);
+  falling.appendChild(el);
+  requestAnimationFrame(()=> { el.style.top = (110 + Math.random()*10)+'vh'; el.style.transform = `translateY(${window.innerHeight}px) rotate(${Math.random()*360}deg)`; el.style.opacity=0; });
+  setTimeout(()=> el.remove(), (dur*1000)+400);
 }
-setInterval(spawnFloatingHeart, 650);
+setInterval(spawnFall, 700);
 
-/* ========== Node hearts creation & exact positioning ========== */
-/* Coordinates are chosen relative to the svg viewBox (420x520). We'll convert to pixel positions inside the treeWrap */
-const nodeDefs = [
-  {id:'n1', x:225, y:115, qIndex:0},
-  {id:'n2', x:150, y:170, qIndex:1},
-  {id:'n3', x:285, y:200, qIndex:2},
-  {id:'n4', x:200, y:245, qIndex:3}
-];
-const nodeLayer = document.getElementById('nodeLayer');
-function placeNodes(){
-  const wrap = document.getElementById('treeWrap');
-  const rect = wrap.getBoundingClientRect();
-  nodeLayer.innerHTML = '';
-  nodeDefs.forEach((d,i)=>{
+/* ---------- many small hearts on tree ---------- */
+const smallContainer = document.getElementById('smallContainer');
+function scatterSmallHearts(count=40){
+  const wrap = document.getElementById('treeCard').getBoundingClientRect();
+  for(let i=0;i<count;i++){
     const el = document.createElement('div');
-    el.className = 'node pulse';
-    el.id = d.id;
-    el.innerHTML = `<div class="h">❤️</div>`;
-    // convert viewbox coords to absolute pixel within wrap
-    const px = (d.x / 420) * rect.width;
-    const py = (d.y / 520) * rect.height;
-    el.style.left = (px - 24) + 'px';
-    el.style.top = (py - 24) + 'px';
-    el.style.pointerEvents = 'auto';
-    nodeLayer.appendChild(el);
-    // add click handler
-    el.addEventListener('click', ()=> onNodeClick(i, el));
-  });
+    el.className='small-heart';
+    el.innerText='❤️';
+    const rx = Math.random()*80 + 10; // percent area
+    const ry = Math.random()*70 + 10;
+    el.style.left = rx + '%';
+    el.style.top = ry + '%';
+    el.style.fontSize = (9 + Math.random()*10) + 'px';
+    el.style.opacity = (0.6 + Math.random()*0.4);
+    // slight offset animation delay
+    el.style.animationDelay = (Math.random()*2)+'s';
+    smallContainer.appendChild(el);
+  }
 }
-window.addEventListener('resize', placeNodes);
-setTimeout(placeNodes, 300); // after layout
+scatterSmallHearts(48);
 
-/* ========== Questions & logic ========== */
+/* ---------- Big heart click nodes & question flow ---------- */
+const nodes = ['B1','B2','B3','B4'].map(id=>document.getElementById(id));
+const modal = document.getElementById('modal');
+const qtxt = document.getElementById('qtxt');
+const opt1 = document.getElementById('opt1');
+const opt2 = document.getElementById('opt2');
+const burn = document.getElementById('burn');
+const reveal = document.getElementById('reveal');
+const floaters = document.getElementById('floaters');
+
 const questions = [
   {q:"Why you are so beautiful?", a1:"Because I smile", a2:"Because of you"},
   {q:"Apki aawaaz mujhe maar degi kisi din, gaogi 'Janemann' kya?", a1:"Yes", a2:"No"},
   {q:"Agar mai poochu: Momos ya Mujhe — kisko chunogi?", a1:"Momos", a2:"Mujhe"},
   {q:"I know you are cute — kya tum meri beti banogi ache wali?", a1:"Yes", a2:"No"}
 ];
-let answeredCount = 0;
-const modal = document.getElementById('modal');
-const qtxt = document.getElementById('qtxt');
-const optA = document.getElementById('optA');
-const optB = document.getElementById('optB');
+let seqIndex = 0; // show questions in order of clicks but using seqIndex
 
-function showModalForQuestion(idx){
+// clickable only when tree ready
+let treeReady = false;
+setTimeout(()=> treeReady = true, 700); // allow short time for visuals
+
+// place swing variations for each node
+nodes.forEach((n,i)=>{
+  // subtle different swing speed
+  n.style.animationDuration = (3 + i*0.6) + 's';
+  n.addEventListener('click', ()=> {
+    if(!treeReady) return;
+    // show next question in sequence
+    if(seqIndex >= questions.length) return;
+    showQuestion(seqIndex, n, i);
+  });
+});
+
+function showQuestion(idx, nodeEl, nodeIdx){
+  // disable clicked node so user can't spam
+  nodeEl.style.pointerEvents='none';
   qtxt.textContent = questions[idx].q;
-  optA.textContent = questions[idx].a1;
-  optB.textContent = questions[idx].a2;
+  opt1.textContent = questions[idx].a1;
+  opt2.textContent = questions[idx].a2;
   modal.style.display = 'block';
-  // reset special classes
-  optA.classList.remove('dodge'); optB.classList.remove('dodge');
-  // special for question 3 (index 2): make Momos option dodge if chosen
+  // reset transforms
+  opt1.style.transform = ''; opt2.style.transform = '';
+
+  // remove previous handlers
+  opt1.onclick = opt2.onclick = null;
+
+  // special for question 3 (index 2): Momos dodge
   if(idx === 2){
-    // make option A = Momos dodge behavior
-    optA.onclick = ()=> {
-      // animate dodge -> move position randomly
-      dodgeButton(optA);
-      showTinyToast("Momos naughty! Try choosing the other one 😜");
+    opt1.onclick = ()=> {
+      // opt1 = Momos -> dodge
+      dodge(opt1);
+      tinyToast("Momos naughty 😂 Try the other option!");
     };
-    optB.onclick = ()=> {
-      // choose 'Mujhe' => accept and proceed
-      modal.style.display = 'none';
-      answeredCount++;
-      heartBurst(8);
-      checkFinal();
+    opt2.onclick = ()=> {
+      chooseAndProceed('Mujhe');
     };
-  } else if(idx === 0 || idx === 1){
-    optA.onclick = ()=> { modal.style.display='none'; answeredCount++; heartBurst(6); checkFinal(); };
-    optB.onclick = ()=> { modal.style.display='none'; answeredCount++; heartBurst(6); checkFinal(); };
   } else if(idx === 3){
-    // final yes/no logic
-    optA.onclick = ()=> { // Yes chosen
+    // final
+    opt1.onclick = ()=> { // Yes
       modal.style.display='none';
-      answeredCount++;
-      heartBurst(12);
-      triggerFinalReveal(true);
+      seqIndex++;
+      fireHearts(12);
+      triggerReveal();
     };
-    optB.onclick = ()=> { // No chosen
+    opt2.onclick = ()=> { // No
       modal.style.display='none';
-      showTinyToast("Katti hu tumse ab me 😤");
-      // show brief broken-heart animation
-      showBrokenHeart();
+      tinyToast("Katti hu tumse ab me 😤");
+      // show broken heart briefly
+      showBroken();
     };
+  } else {
+    opt1.onclick = ()=> { modal.style.display='none'; seqIndex++; fireHearts(6); tinyToast("Nice!");};
+    opt2.onclick = ()=> { modal.style.display='none'; seqIndex++; fireHearts(6); tinyToast("Okay :)");};
   }
 }
 
-/* dodge button playful effect */
-function dodgeButton(btn){
-  btn.style.transition = 'transform .12s ease, left .18s ease, top .18s ease';
+function chooseAndProceed(ans){
+  modal.style.display='none';
+  seqIndex++;
+  fireHearts(8);
+  tinyToast("Aww ❤️");
+}
+
+/* dodge animation */
+function dodge(btn){
+  const r = 70 + Math.random()*140;
+  const a = Math.random()*Math.PI*2;
   btn.classList.add('dodge');
-  const r = 60 + Math.random()*120;
-  const ang = Math.random() * Math.PI * 2;
-  btn.style.transform = `translate(${Math.cos(ang)*r}px, ${Math.sin(ang)*r}px)`;
-  setTimeout(()=> {
-    btn.style.transform = '';
-    btn.classList.remove('dodge');
-  }, 540);
+  btn.style.transform = `translate(${Math.cos(a)*r}px, ${Math.sin(a)*r}px)`;
+  setTimeout(()=>{ btn.style.transform=''; btn.classList.remove('dodge'); }, 520);
+}
+
+/* tiny toast */
+function tinyToast(msg){
+  const t = document.createElement('div'); t.textContent=msg;
+  Object.assign(t.style,{position:'fixed',left:'50%',transform:'translateX(-50%)',bottom:'8%',background:'linear-gradient(90deg,var(--accent),#ff8aa0)',padding:'8px 12px',borderRadius:'10px',zIndex:98,color:'#fff',fontWeight:700});
+  document.body.appendChild(t);
+  setTimeout(()=>{ t.style.transition='opacity .5s'; t.style.opacity=0; setTimeout(()=>t.remove(),500)},1500);
 }
 
 /* heart burst */
-function heartBurst(n){
+function fireHearts(n){
   for(let i=0;i<n;i++){
-    const el = document.createElement('div');
-    el.className = 'fheart';
-    el.innerText = '❤️';
-    const size = 14 + Math.random()*32;
-    el.style.fontSize = size + 'px';
-    el.style.left = (50 + (Math.random()*160-80)) + 'vw';
-    el.style.top = (40 + Math.random()*30) + 'vh';
-    el.style.opacity = 1;
-    el.style.transition = `transform ${900+Math.random()*600}ms cubic-bezier(.2,.9,.2,1), opacity 900ms linear`;
-    document.getElementById('fallingLayer').appendChild(el);
-    requestAnimationFrame(()=> {
-      el.style.transform = `translateY(${200 + Math.random()*260}px) translateX(${Math.random()*140-70}px) scale(${0.6+Math.random()*0.9}) rotate(${Math.random()*160-80}deg)`;
+    const el = document.createElement('div'); el.className='fheart'; el.innerText='❤️';
+    const size = 12 + Math.random()*34; el.style.fontSize = size+'px';
+    el.style.left = (45 + Math.random()*20)+'vw'; el.style.top = (35 + Math.random()*20)+'vh';
+    el.style.opacity = 1; el.style.position='fixed'; el.style.zIndex=70;
+    document.body.appendChild(el);
+    setTimeout(()=> {
+      el.style.transition = 'transform 1000ms cubic-bezier(.2,.9,.2,1), opacity 900ms';
+      el.style.transform = `translateY(${120 + Math.random()*220}px) rotate(${Math.random()*180-90}deg) scale(${0.6+Math.random()*0.9})`;
       el.style.opacity = 0;
-    });
-    setTimeout(()=> el.remove(), 2000);
+    },30);
+    setTimeout(()=> el.remove(), 1100);
   }
-}
-
-/* tiny toast messages */
-function showTinyToast(txt){
-  const t = document.createElement('div');
-  t.textContent = txt;
-  t.style.position='fixed'; t.style.left='50%'; t.style.bottom='8%'; t.style.transform='translateX(-50%)';
-  t.style.background='linear-gradient(90deg,var(--accent),#ff8aa0)'; t.style.padding='8px 12px'; t.style.borderRadius='12px'; t.style.zIndex=90; t.style.boxShadow='0 10px 30px rgba(0,0,0,0.5)';
-  document.body.appendChild(t);
-  setTimeout(()=> { t.style.transition='opacity .5s'; t.style.opacity=0; setTimeout(()=> t.remove(),600)},1600);
 }
 
 /* broken heart */
-function showBrokenHeart(){
-  const el = document.createElement('div');
-  el.textContent = '💔';
-  el.style.position='fixed'; el.style.left='50%'; el.style.top='20%'; el.style.transform='translateX(-50%)'; el.style.fontSize='72px'; el.style.zIndex=90;
-  document.body.appendChild(el);
-  setTimeout(()=> el.remove(),1800);
+function showBroken(){
+  const b = document.createElement('div'); b.textContent='💔'; Object.assign(b.style,{position:'fixed',left:'50%',top:'22%',transform:'translateX(-50%)',fontSize:'72px',zIndex:99});
+  document.body.appendChild(b); setTimeout(()=> b.remove(),1400);
 }
 
-/* ========== node click handler ========== */
-function onNodeClick(index, element){
-  // disable pointer until modal closed
-  element.style.pointerEvents = 'none';
-  // ask the question corresponding to index order (we ensure order by tracking answeredCount)
-  const qIndex = answeredCount; // show sequentially
-  if(qIndex >= questions.length) return;
-  showModalForQuestion(qIndex);
+/* final reveal */
+function triggerReveal(){
+  burn.style.display='flex';
+  setTimeout(()=> { burn.style.display='none'; reveal.style.display='flex'; spawnFloaters(); try { audio.currentTime = 0; audio.play().catch(()=>{}); } catch(e){} }, 2200);
 }
 
-/* check after each answer if need to continue or finish */
-function checkFinal(){
-  if(answeredCount >= questions.length - 1){
-    // last question remains; but this function is called after intermediate Qs
-    // we simply let user click next heart and trigger final flow
-    // small hint
-    showTinyToast("Almost there... click the last heart!");
-  }
-}
-
-/* final reveal: burning animation then reveal panel */
-const burnOverlay = document.getElementById('burnOverlay');
-const reveal = document.getElementById('reveal');
-function triggerFinalReveal(ok){
-  if(!ok) return;
-  burnOverlay.style.display = 'flex';
-  setTimeout(()=> {
-    burnOverlay.style.display = 'none';
-    reveal.style.display = 'flex';
-    // animate reveal elements
-    const big = document.querySelector('.big');
-    big.style.transform = 'scale(.92)';
-    setTimeout(()=> big.style.transform = 'scale(1)', 60);
-    // float some I❤️U bubbles
-    spawnFloaters();
-    try { audio.currentTime = 0; audio.play().catch(()=>{}); } catch(e){}
-  }, 2200);
-}
-
-/* floaters (I ❤️ U) */
-const floaters = document.getElementById('floaters');
+/* floaters */
 function spawnFloaters(){
   for(let i=0;i<10;i++){
-    const f = document.createElement('div');
-    f.className = 'floater';
-    f.style.left = (10 + Math.random()*80) + 'vw';
-    f.style.bottom = (5 + Math.random()*40) + 'vh';
-    f.style.fontSize = (12 + Math.random()*28) + 'px';
-    f.textContent = 'I ❤️ U';
-    floaters.appendChild(f);
-    const dur = 6000 + Math.random()*6000;
-    f.style.animationDuration = dur + 'ms';
-    setTimeout(()=> f.remove(), dur+200);
+    const el = document.createElement('div'); el.className='floater'; el.textContent='I ❤️ U';
+    el.style.left = (8 + Math.random()*84)+'vw'; el.style.bottom = (6 + Math.random()*40)+'vh'; el.style.fontSize = (12 + Math.random()*26)+'px';
+    floaters.appendChild(el);
+    setTimeout(()=> el.remove(), 6000 + Math.random()*2000);
   }
 }
 
-/* ========== Start button wiring & hint to click heart nodes only after tree drawn ========== */
-document.getElementById('playBtn').addEventListener('click', ()=>{
-  try{ audio.play().catch(()=>{}); }catch(e){}
-  // show hint toast
-  showTinyToast("Tap a heart on the tree to answer!");
+/* clicking big image toggles side reveal (already visible) -> small animation */
+document.getElementById('bigImg').addEventListener('click', ()=> {
+  const big = document.getElementById('bigImg');
+  big.animate([{transform:'scale(1)'},{transform:'scale(1.03)'},{transform:'scale(1)'}],{duration:600});
 });
 
-// ensure nodes are active only once drawing finished (draw animation length ~2.6s)
-setTimeout(()=> {
-  // nodes place again (just in case)
-  placeNodes();
-  // enable nodes (they already added click handlers)
-}, 2800);
-
-/* ========== small accessibility: clicking outside modal does nothing (force pick) ========== */
-/* Hide modal when not used by flow - we rely on explicit picks so not auto-close */
-
-/* ========== final: create nodes initially (in case placeNodes not yet run) ========== */
-setTimeout(()=> {
-  placeNodes();
-  // add gentle pulse and hint
-  document.querySelectorAll('.node').forEach((n, i)=>{
-    setTimeout(()=> n.classList.add('pulse'), 600 + i*120);
+/* spawn small hearts occasionally (already created many) - add subtle movement */
+setInterval(()=> {
+  const smalls = document.querySelectorAll('.small-heart');
+  smalls.forEach((s)=> {
+    s.style.transform = `scale(${0.95 + Math.random()*0.18}) translateY(${Math.random()*6-3}px)`;
   });
-}, 600);
+}, 1800);
 
-/* ========== initial tiny star twinkle and first spawn ========== */
-setTimeout(()=> spawnFloatingHeart(), 1000);
+/* clicking outside modal does nothing - force choice */
+/* close modal when answered handled in logic */
+
+/* Helpful: hide modal if present when clicking anywhere else (non-intrusive) */
+document.addEventListener('click', (e)=> {
+  if(document.getElementById('modal').style.display === 'block'){
+    // keep open until user chooses - do not auto-close
+  }
+});
+
+/* place small hearts responsive (already percent-based) */
+/* done */
+
+/* try place nodes after layout - they are placed via inline % so fine */
+
+/* autoplay fallback has been added earlier */
 
 </script>
 </body>
