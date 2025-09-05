@@ -8,118 +8,164 @@
     body {
       margin: 0;
       padding: 0;
-      background: linear-gradient(to bottom right, #ffdde1, #ee9ca7);
+      height: 100vh;
+      overflow: hidden;
+      background: black;
+      color: white;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      overflow: hidden;
+      flex-direction: column;
       font-family: 'Arial', sans-serif;
     }
-    .heart-btn {
-      font-size: 60px;
-      cursor: pointer;
-      border: none;
-      background: none;
-      animation: pulse 1.5s infinite;
+
+    /* Stars background */
+    .stars {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      background: black;
+      z-index: -2;
+      overflow: hidden;
     }
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.2); }
-      100% { transform: scale(1); }
+    .stars::after {
+      content: "";
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      background: transparent url("https://i.ibb.co/yVZf4yV/stars.png") repeat;
+      animation: moveStars 60s linear infinite;
     }
+    @keyframes moveStars {
+      from {transform: translateY(0);}
+      to {transform: translateY(-1000px);}
+    }
+
+    /* Falling hearts */
+    .heart {
+      position: fixed;
+      top: -10px;
+      color: red;
+      font-size: 20px;
+      animation: fall linear infinite;
+      z-index: -1;
+    }
+    @keyframes fall {
+      to {transform: translateY(110vh);}
+    }
+
+    /* Tree */
     .tree {
-      position: relative;
-      width: 250px;
-      height: 350px;
       display: none;
+      position: relative;
+      width: 200px;
+      height: 300px;
     }
     .branch {
-      width: 20px;
-      height: 200px;
+      width: 30px;
+      height: 150px;
       background: brown;
       margin: 0 auto;
       border-radius: 10px;
     }
-    .leaves {
+    .crown {
+      width: 200px;
+      height: 200px;
+      background: green;
+      border-radius: 50%;
       position: absolute;
       top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 250px;
-      height: 250px;
-      border-radius: 50%;
-      background: pink;
+      left: 0;
       display: flex;
-      flex-wrap: wrap;
       justify-content: center;
       align-items: center;
-      overflow: hidden;
+      flex-wrap: wrap;
+      padding: 20px;
+      box-shadow: 0 0 20px rgba(255,0,0,0.5);
     }
-    .leaf {
-      width: 20px;
-      height: 20px;
-      color: red;
-      font-size: 18px;
-      animation: fall 5s linear infinite;
+    .tree-heart {
+      font-size: 22px;
+      cursor: pointer;
+      margin: 5px;
+      animation: pulse 1.5s infinite;
     }
-    @keyframes fall {
-      from { transform: translateY(-20px); opacity: 1; }
-      to { transform: translateY(300px); opacity: 0; }
+    @keyframes pulse {
+      0% { transform: scale(1);}
+      50% { transform: scale(1.2);}
+      100% { transform: scale(1);}
     }
-    .song-btn, .beauty-btn {
-      margin-top: 20px;
-      padding: 10px 20px;
+
+    /* Buttons */
+    .btn {
+      margin: 20px;
+      padding: 12px 24px;
       border: none;
-      border-radius: 20px;
-      background: #ff4d6d;
-      color: white;
+      border-radius: 25px;
       font-size: 18px;
       cursor: pointer;
-      display: none;
-    }
-    .pics {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 20px;
-      display: none;
-    }
-    .pics img {
-      width: 100px;
-      height: 100px;
-      border-radius: 15px;
-      object-fit: cover;
+      background: #ff4d6d;
+      color: white;
       box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     }
-    .love-line {
-      margin-top: 15px;
-      font-size: 18px;
-      text-align: center;
-      color: #b3003b;
+
+    /* Burning effect for pic2 */
+    .burn {
       display: none;
+      width: 200px;
+      height: 250px;
+      object-fit: cover;
+      border-radius: 10px;
+      animation: burn 3s forwards;
     }
-    @media (max-width: 500px) {
-      .tree { width: 200px; height: 280px; }
-      .leaves { width: 200px; height: 200px; }
-      .pics img { width: 80px; height: 80px; }
+    @keyframes burn {
+      0% {filter: brightness(2) sepia(1) hue-rotate(0deg);}
+      100% {filter: none;}
+    }
+
+    /* Final pics */
+    .pics {
+      display: none;
+      margin-top: 20px;
+      gap: 20px;
+    }
+    .pics img {
+      width: 150px;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(255,0,0,0.7);
+    }
+
+    .love-line {
+      display: none;
+      margin-top: 15px;
+      font-size: 20px;
+      color: pink;
+      text-shadow: 0 0 10px red;
+      text-align: center;
     }
   </style>
 </head>
 <body>
-  <button class="heart-btn" id="startBtn">❤️</button>
+  <div class="stars"></div>
+
+  <button class="btn" id="playSong">▶ Play Song (Janemann)</button>
 
   <div class="tree" id="tree">
     <div class="branch"></div>
-    <div class="leaves" id="leaves"></div>
+    <div class="crown" id="crown">
+      <div class="tree-heart">❤️</div>
+      <div class="tree-heart">❤️</div>
+      <div class="tree-heart">❤️</div>
+      <div class="tree-heart">❤️</div>
+    </div>
   </div>
 
-  <button class="song-btn" id="songBtn">▶ Play Song</button>
-  <button class="beauty-btn" id="beautyBtn">✨ Click to see beauty</button>
+  <img src="pic2.jpg" alt="Pic2" class="burn" id="pic2">
 
   <div class="pics" id="pics">
-    <img src="pic1.jpg" alt="Pic 1">
-    <img src="pic2.jpg" alt="Pic 2">
+    <img src="pic1.jpg" alt="Pic1">
+    <img src="pic2.jpg" alt="Pic2 Again">
   </div>
 
   <div class="love-line" id="loveLine">
@@ -129,40 +175,44 @@
   <audio id="song" src="song.mp3"></audio>
 
   <script>
-    const startBtn = document.getElementById('startBtn');
-    const tree = document.getElementById('tree');
-    const leaves = document.getElementById('leaves');
-    const songBtn = document.getElementById('songBtn');
+    const playBtn = document.getElementById('playSong');
     const song = document.getElementById('song');
-    const beautyBtn = document.getElementById('beautyBtn');
+    const tree = document.getElementById('tree');
+    const hearts = document.querySelectorAll('.tree-heart');
+    const pic2 = document.getElementById('pic2');
     const pics = document.getElementById('pics');
     const loveLine = document.getElementById('loveLine');
 
-    startBtn.addEventListener('click', () => {
-      startBtn.style.display = 'none';
-      tree.style.display = 'block';
-      songBtn.style.display = 'inline-block';
-      for (let i = 0; i < 30; i++) {
-        const leaf = document.createElement('div');
-        leaf.classList.add('leaf');
-        leaf.innerHTML = "❤️";
-        leaf.style.left = Math.random() * 200 + "px";
-        leaf.style.animationDuration = (3 + Math.random() * 3) + "s";
-        leaves.appendChild(leaf);
-      }
-    });
+    // Falling hearts spawn
+    function createHeart() {
+      const heart = document.createElement('div');
+      heart.classList.add('heart');
+      heart.innerHTML = "❤️";
+      heart.style.left = Math.random() * 100 + "vw";
+      heart.style.animationDuration = (3 + Math.random() * 5) + "s";
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 7000);
+    }
+    setInterval(createHeart, 500);
 
-    songBtn.addEventListener('click', () => {
+    playBtn.addEventListener('click', () => {
       song.play();
-      beautyBtn.style.display = 'inline-block';
+      playBtn.style.display = 'none';
+      tree.style.display = 'block';
     });
 
-    beautyBtn.addEventListener('click', () => {
-      leaves.innerHTML = "";
+    hearts.forEach(h => {
+      h.addEventListener('click', () => {
+        tree.style.display = 'none';
+        pic2.style.display = 'block';
+      });
+    });
+
+    pic2.addEventListener('click', () => {
+      pic2.style.display = 'none';
       pics.style.display = 'flex';
       loveLine.style.display = 'block';
     });
   </script>
 </body>
 </html>
-
