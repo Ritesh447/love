@@ -9,111 +9,57 @@
   :root{
     --bg1:#040412; --accent:#ff4d6d; --accent-2:#ff7a88; --soft:#ffb4c6;
   }
-  *{box-sizing:border-box}
-  html,body{height:100%;margin:0;background:var(--bg1);font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color:#fff;overflow:hidden}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:var(--bg1);font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color:#fff;overflow:hidden}
 
-  /* Background starry sky */
-  body::before{
-    content:"";position:fixed;inset:0;
-    background:radial-gradient(ellipse at bottom,#1b2735 0%,#090a0f 100%);
-    z-index:-2;
-  }
-  body::after{
-    content:"";position:fixed;inset:0;
-    background:url('https://i.ibb.co/Y8bD6jR/stars.png'); /* stars overlay */
-    opacity:.4;z-index:-1;
-  }
+  /* stars bg */
+  body::before{content:"";position:fixed;inset:0;background:radial-gradient(circle at 20% 20%,rgba(255,255,255,.7) 1px,transparent 2px),
+  radial-gradient(circle at 40% 80%,rgba(255,255,255,.5) 1px,transparent 2px),
+  radial-gradient(circle at 70% 30%,rgba(255,255,255,.6) 1px,transparent 2px),
+  radial-gradient(circle at 90% 60%,rgba(255,255,255,.8) 1px,transparent 2px);
+  background-size:200px 200px;animation:starMove 60s linear infinite;z-index:0}
+  @keyframes starMove{from{background-position:0 0}to{background-position:2000px 2000px}}
 
-  /* Falling hearts */
-  .heartFall{
-    position:fixed;top:-10px;width:20px;height:20px;
-    background:url('https://i.ibb.co/JmF3vLm/heart.png') no-repeat center/contain;
-    animation:fall linear infinite;
-    z-index:5;
-  }
-  @keyframes fall{
-    to{transform:translateY(110vh) rotate(360deg);}
-  }
+  /* tree */
+  .tree{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:320px;height:420px}
+  .branch{position:absolute;bottom:0;left:50%;width:6px;height:100px;background:#fff;border-radius:3px;transform-origin:bottom center;animation:grow 4s ease-out forwards}
+  @keyframes grow{0%{height:0;opacity:0}100%{opacity:1}}
+  .leaf{position:absolute;width:16px;height:16px;background:var(--accent);border-radius:50%;animation:fall 10s linear infinite}
+  @keyframes fall{0%{transform:translateY(0) scale(1);opacity:1}100%{transform:translateY(600px) scale(0.5);opacity:0}}
 
-  /* Tree image */
-  .treeWrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:10}
-  .treeWrap img{max-height:80vh;max-width:90%;filter:drop-shadow(0 0 15px rgba(255,77,109,.5));}
+  .heart{position:absolute;width:40px;height:40px;background:var(--accent);transform:rotate(-45deg);cursor:pointer}
+  .heart::before,.heart::after{content:"";position:absolute;width:40px;height:40px;background:var(--accent);border-radius:50%}
+  .heart::before{top:-20px;left:0}
+  .heart::after{left:20px;top:0}
 
-  /* Small glowing hearts */
-  .smallHeart{
-    position:absolute;font-size:12px;color:var(--soft);animation:pulse 2s infinite;
-  }
-  @keyframes pulse{
-    0%,100%{transform:scale(1);opacity:.7}
-    50%{transform:scale(1.4);opacity:1}
-  }
+  .questionBox{position:fixed;inset:0;background:rgba(0,0,0,.8);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;display:none}
+  .questionBox h2{margin-bottom:20px;font-size:24px;color:var(--soft)}
+  .btnRow{display:flex;gap:20px}
+  .btnRow button{padding:10px 20px;font-size:18px;border:none;border-radius:12px;cursor:pointer;background:var(--accent-2);color:#fff;transition:.3s}
+  .btnRow button:hover{background:var(--accent)}
 
-  /* Hanging big hearts */
-  .bigHeart{
-    position:absolute;font-size:42px;color:var(--accent);
-    cursor:pointer;animation:swing 3s ease-in-out infinite;
-  }
-  @keyframes swing{
-    0%{transform:rotate(8deg);}
-    50%{transform:rotate(-8deg);}
-    100%{transform:rotate(8deg);}
-  }
-
-  /* Question box */
-  .questionBox{
-    position:fixed;bottom:40px;left:50%;transform:translateX(-50%);
-    background:rgba(0,0,0,0.7);padding:20px 24px;border-radius:16px;
-    box-shadow:0 0 20px rgba(255,77,109,.5);text-align:center;display:none;
-    z-index:150;
-  }
-  .questionBox button{
-    margin:10px;padding:8px 18px;border:none;border-radius:8px;
-    background:var(--accent-2);color:#fff;font-weight:600;cursor:pointer;
-    transition:.3s;
-  }
-  .questionBox button:hover{background:var(--accent);}
-
-  /* Final reveal */
+  /* reveal */
   .reveal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:200;padding:28px}
-  .revealPanel{width:calc(100% - 60px);max-width:1100px;background:rgba(255,255,255,0.03);
-    border-radius:20px;padding:24px;display:flex;gap:20px;align-items:center;justify-content:center;
-    flex-wrap:wrap;backdrop-filter: blur(6px);border:1px solid rgba(255,255,255,0.05);
-    box-shadow:0 40px 120px rgba(0,0,0,0.7);animation:panelFade 1s ease forwards}
-  @keyframes panelFade{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
-
-  .bigImg img, .sideBlock img{
-    width:100%;border-radius:18px;object-fit:cover;border:4px solid var(--accent-2);
-    box-shadow:0 20px 60px rgba(255,0,0,0.5),0 0 30px rgba(255,77,109,0.6) inset;
-    animation:frameGlow 3s ease-in-out infinite;
-  }
-  @keyframes frameGlow{
-    0%{box-shadow:0 20px 60px rgba(255,0,0,0.5),0 0 25px rgba(255,77,109,0.4) inset}
-    50%{box-shadow:0 25px 70px rgba(255,50,90,0.7),0 0 40px rgba(255,120,150,0.7) inset}
-    100%{box-shadow:0 20px 60px rgba(255,0,0,0.5),0 0 25px rgba(255,77,109,0.4) inset}
-  }
-  .bigImg{width:54%;max-width:620px}
+  .revealPanel{width:calc(100% - 60px);max-width:1100px;background:rgba(255,255,255,0.05);border-radius:22px;padding:20px;display:flex;gap:20px;align-items:center;justify-content:center;flex-wrap:wrap;backdrop-filter: blur(8px);border:2px solid var(--accent);box-shadow:0 0 40px rgba(255,77,109,0.4), inset 0 0 25px rgba(255,77,109,0.2);animation:frameGlow 3s ease-in-out infinite}
+  @keyframes frameGlow{0%{box-shadow:0 0 40px rgba(255,77,109,0.4), inset 0 0 25px rgba(255,77,109,0.2);}
+  50%{box-shadow:0 0 60px rgba(255,122,136,0.6), inset 0 0 35px rgba(255,122,136,0.3);}
+  100%{box-shadow:0 0 40px rgba(255,77,109,0.4), inset 0 0 25px rgba(255,77,109,0.2);}}
+  .bigImg img{width:100%;max-width:620px;border-radius:18px;border:4px solid var(--accent-2);box-shadow:0 20px 80px rgba(0,0,0,0.7);animation:picPulse 6s ease-in-out infinite}
   .sideBlock{width:38%;display:flex;flex-direction:column;gap:16px}
-  .finalLine{font-size:20px;font-weight:800;color:var(--soft);text-align:center;text-shadow:0 0 28px rgba(255,0,80,0.08)}
-  @media(max-width:820px){.bigImg{width:92%}.sideBlock{width:92%}}
+  .sideBlock img{width:100%;border-radius:14px;border:3px solid var(--soft);object-fit:cover;box-shadow:0 12px 40px rgba(0,0,0,0.45);animation:picPulse 7s ease-in-out infinite reverse}
+  @keyframes picPulse{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}
+  .finalLine{font-size:22px;font-weight:800;color:var(--soft);text-align:center;text-shadow:0 0 30px rgba(255,0,80,0.12)}
 </style>
 </head>
 <body>
-<div class="treeWrap">
-  <img src="tree.png" alt="Love Tree">
-  <div class="smallHeart" style="top:40%;left:47%">❤️</div>
-  <div class="smallHeart" style="top:35%;left:52%">❤️</div>
-  <div class="smallHeart" style="top:60%;left:44%">❤️</div>
-  <div class="smallHeart" style="top:65%;left:50%">❤️</div>
-  <!-- Big hearts -->
-  <div class="bigHeart" style="top:30%;left:40%">❤️</div>
-  <div class="bigHeart" style="top:28%;left:55%">❤️</div>
-  <div class="bigHeart" style="top:50%;left:35%">❤️</div>
-  <div class="bigHeart" style="top:55%;left:60%">❤️</div>
-</div>
+
+<audio id="bgm" src="song.mp3" autoplay loop></audio>
+
+<div class="tree" id="tree"></div>
 
 <div class="questionBox" id="questionBox">
-  <p id="questionText"></p>
-  <div>
+  <h2 id="qText"></h2>
+  <div class="btnRow">
     <button id="opt1"></button>
     <button id="opt2"></button>
   </div>
@@ -121,78 +67,45 @@
 
 <div class="reveal" id="reveal">
   <div class="revealPanel">
-    <div class="bigImg"><img src="pic1.jpg" alt="Bestie Pic"></div>
+    <div class="bigImg"><img id="bigImg" src="pic2.jpg" alt="pic2"></div>
     <div class="sideBlock">
-      <img src="pic2.jpg" alt="Second Pic">
-      <div class="finalLine">Hurray! I know you are the best Bestie ❤️✨</div>
+      <img id="sideImg" src="pic1.jpg" alt="pic1">
+      <div class="finalLine">Your beauty shines brighter than every star, my precious bestie ❤️</div>
     </div>
   </div>
 </div>
 
-<audio id="bgMusic" src="song.mp3" autoplay loop></audio>
-
 <script>
-const music=document.getElementById("bgMusic");
-music.playbackRate=1.25;
+const tree=document.getElementById('tree');
+function makeBranch(rot,len){
+  const b=document.createElement('div');b.className='branch';b.style.height=len+'px';b.style.transform='rotate('+rot+'deg)';tree.appendChild(b)}
+makeBranch(0,150);makeBranch(-40,110);makeBranch(40,110);makeBranch(-70,80);makeBranch(70,80);
 
-/* Falling hearts generator */
-function createFallingHeart(){
-  const h=document.createElement("div");
-  h.className="heartFall";
-  h.style.left=Math.random()*100+"vw";
-  h.style.animationDuration=(5+Math.random()*5)+"s";
-  document.body.appendChild(h);
-  setTimeout(()=>h.remove(),10000);
-}
-setInterval(createFallingHeart,600);
+function spawnLeaf(){const l=document.createElement('div');l.className='leaf';l.style.left=Math.random()*window.innerWidth+'px';l.style.top='-20px';document.body.appendChild(l);setTimeout(()=>l.remove(),10000)}
+setInterval(spawnLeaf,800);
 
-/* Questions */
+const hearts=[{x:-60,y:200},{x:60,y:200},{x:-90,y:100},{x:90,y:100}];
+hearts.forEach((h,i)=>{const el=document.createElement('div');el.className='heart';el.style.left='calc(50% + '+h.x+'px)';el.style.bottom=h.y+'px';tree.appendChild(el);el.onclick=()=>askQ(i)});
+
 const questions=[
   {q:"Why you are so beautiful?",a1:"Because I smile",a2:"Because of you"},
   {q:"Apki aawaaz mujhe maar degi kisi din, gaogi 'Janemann' kya?",a1:"Yes",a2:"No"},
   {q:"Agar mai poochu: Momos ya Mujhe — kisko chunogi?",a1:"Momos",a2:"Mujhe"},
   {q:"I know you are cute — kya tum meri bestie banogi ache wali?",a1:"Yes",a2:"No"}
 ];
-let qIndex=0;
+let qi=0;
+const qBox=document.getElementById('questionBox');const qText=document.getElementById('qText');const opt1=document.getElementById('opt1');const opt2=document.getElementById('opt2');
 
-/* Hearts click */
-document.querySelectorAll(".bigHeart").forEach(h=>{
-  h.addEventListener("click",()=>{
-    if(qIndex<questions.length) showQuestion();
-    else showReveal();
-  });
-});
-const qBox=document.getElementById("questionBox");
-const qText=document.getElementById("questionText");
-const opt1=document.getElementById("opt1");
-const opt2=document.getElementById("opt2");
+function askQ(i){qi=i;showQ()}
+function showQ(){const q=questions[qi];qBox.style.display='flex';qText.textContent=q.q;opt1.textContent=q.a1;opt2.textContent=q.a2}
 
-function showQuestion(){
-  const q=questions[qIndex];
-  qText.textContent=q.q;
-  opt1.textContent=q.a1;
-  opt2.textContent=q.a2;
-  qBox.style.display="block";
-  opt1.onclick=()=>nextQ(q.a1);
-  opt2.onclick=()=>nextQ(q.a2);
-}
-function nextQ(ans){
-  qBox.style.display="none";
-  if(qIndex===2 && ans==="Momos"){
-    alert("😂 Arre! Momos nahi, mujhe choose karo!");
-    return;
-  }
-  if(qIndex===3 && ans==="No"){
-    alert("😢 Katti hu tumse ab main!");
-    return;
-  }
-  qIndex++;
-  if(qIndex>=questions.length) showReveal();
-}
-
-function showReveal(){
-  document.getElementById("reveal").style.display="flex";
-}
+opt1.onclick=()=>nextQ(true);opt2.onclick=()=>nextQ(false);
+function nextQ(ans){if(qi===2&&ans){ // momos select
+  opt1.style.position="relative";opt1.style.left="2000px";return}
+  if(qi<questions.length-1){qi++;showQ()}else{qBox.style.display='none';document.getElementById('reveal').style.display='flex'}}
+  
+/* speed up song */
+const bgm=document.getElementById('bgm');bgm.playbackRate=1.25;
 </script>
 </body>
 </html>
