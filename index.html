@@ -7,105 +7,464 @@
 <link rel="preload" href="song.mp3" as="audio">
 <style>
   :root{
-    --bg1:#040412; --accent:#ff4d6d; --accent-2:#ff7a88; --soft:#ffb4c6;
+    --bg1:#040412; --accent:#ff4d6d; --accent-2:#ff7a88; --soft:#ffb4c6; --gold:#ffd166;
+    --glass: rgba(255,255,255,0.03);
   }
-  *{box-sizing:border-box;margin:0;padding:0}
-  html,body{height:100%;background:var(--bg1);font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color:#fff;overflow:hidden}
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:var(--bg1);font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color:#fff;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow:hidden}
+  /* ---------- Stage ---------- */
+  .stage{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:22px}
 
-  /* stars bg */
-  body::before{content:"";position:fixed;inset:0;background:radial-gradient(circle at 20% 20%,rgba(255,255,255,.7) 1px,transparent 2px),
-  radial-gradient(circle at 40% 80%,rgba(255,255,255,.5) 1px,transparent 2px),
-  radial-gradient(circle at 70% 30%,rgba(255,255,255,.6) 1px,transparent 2px),
-  radial-gradient(circle at 90% 60%,rgba(255,255,255,.8) 1px,transparent 2px);
-  background-size:200px 200px;animation:starMove 60s linear infinite;z-index:0}
-  @keyframes starMove{from{background-position:0 0}to{background-position:2000px 2000px}}
+  /* ---------- Starfield background (fast but nice) ---------- */
+  .bg-layer{position:fixed;inset:0;z-index:-6;pointer-events:none}
+  .stars, .stars2 {position:absolute;inset:0;background-repeat:repeat;opacity:0.95}
+  .stars{background-image:
+    radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.95) 1px, transparent 1px),
+    radial-gradient(1px 1px at 20% 70%, rgba(255,255,255,0.9) 1px, transparent 1px),
+    radial-gradient(1px 1px at 40% 30%, rgba(255,255,255,0.9) 1px, transparent 1px);
+    background-size: 160px 160px, 200px 200px, 140px 140px;
+    animation: twinkle 6s linear infinite; filter:contrast(120%);
+  }
+  .stars2{opacity:.65;background-image:
+    radial-gradient(1.2px 1.2px at 45% 55%, rgba(255,255,255,0.6) 1px, transparent 1px),
+    radial-gradient(1px 1px at 80% 30%, rgba(255,255,255,0.6) 1px, transparent 1px);
+    background-size: 220px 220px, 180px 180px; transform:translateZ(0); animation: twinkle 8s linear infinite reverse; }
+  @keyframes twinkle{50%{opacity:.78}100%{opacity:1}}
 
-  /* tree */
-  .tree{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:320px;height:420px}
-  .branch{position:absolute;bottom:0;left:50%;width:6px;height:100px;background:#fff;border-radius:3px;transform-origin:bottom center;animation:grow 4s ease-out forwards}
-  @keyframes grow{0%{height:0;opacity:0}100%{opacity:1}}
-  .leaf{position:absolute;width:16px;height:16px;background:var(--accent);border-radius:50%;animation:fall 10s linear infinite}
-  @keyframes fall{0%{transform:translateY(0) scale(1);opacity:1}100%{transform:translateY(600px) scale(0.5);opacity:0}}
+  /* slight vignette */
+  .vignette{position:fixed;inset:0;z-index:-5;background:radial-gradient(ellipse at center, rgba(255,50,90,0.03), rgba(0,0,0,0.7))}
 
-  .heart{position:absolute;width:40px;height:40px;background:var(--accent);transform:rotate(-45deg);cursor:pointer}
-  .heart::before,.heart::after{content:"";position:absolute;width:40px;height:40px;background:var(--accent);border-radius:50%}
-  .heart::before{top:-20px;left:0}
-  .heart::after{left:20px;top:0}
+  /* ---------- Shooting star (occasional) ---------- */
+  .shoot{position:fixed;z-index:-4;left:-25%;top:10%;opacity:0;pointer-events:none}
+  .shoot .tail{width:320px;height:2px;background:linear-gradient(90deg, rgba(255,255,255,1), rgba(255,255,255,0));box-shadow:0 0 18px rgba(255,255,255,0.45);filter:blur(1px)}
 
-  .questionBox{position:fixed;inset:0;background:rgba(0,0,0,.8);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;display:none}
-  .questionBox h2{margin-bottom:20px;font-size:24px;color:var(--soft)}
-  .btnRow{display:flex;gap:20px}
-  .btnRow button{padding:10px 20px;font-size:18px;border:none;border-radius:12px;cursor:pointer;background:var(--accent-2);color:#fff;transition:.3s}
-  .btnRow button:hover{background:var(--accent)}
+  /* ---------- Falling decorative hearts ---------- */
+  .falling-layer{position:fixed;inset:0;z-index:-3;pointer-events:none}
+  .fheart{position:absolute;font-size:20px;filter:drop-shadow(0 8px 24px rgba(255,20,100,0.12));opacity:0.95}
 
-  /* reveal */
-  .reveal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:200;padding:28px}
-  .revealPanel{width:calc(100% - 60px);max-width:1100px;background:rgba(255,255,255,0.05);border-radius:22px;padding:20px;display:flex;gap:20px;align-items:center;justify-content:center;flex-wrap:wrap;backdrop-filter: blur(8px);border:2px solid var(--accent);box-shadow:0 0 40px rgba(255,77,109,0.4), inset 0 0 25px rgba(255,77,109,0.2);animation:frameGlow 3s ease-in-out infinite}
-  @keyframes frameGlow{0%{box-shadow:0 0 40px rgba(255,77,109,0.4), inset 0 0 25px rgba(255,77,109,0.2);}
-  50%{box-shadow:0 0 60px rgba(255,122,136,0.6), inset 0 0 35px rgba(255,122,136,0.3);}
-  100%{box-shadow:0 0 40px rgba(255,77,109,0.4), inset 0 0 25px rgba(255,77,109,0.2);}}
-  .bigImg img{width:100%;max-width:620px;border-radius:18px;border:4px solid var(--accent-2);box-shadow:0 20px 80px rgba(0,0,0,0.7);animation:picPulse 6s ease-in-out infinite}
-  .sideBlock{width:38%;display:flex;flex-direction:column;gap:16px}
-  .sideBlock img{width:100%;border-radius:14px;border:3px solid var(--soft);object-fit:cover;box-shadow:0 12px 40px rgba(0,0,0,0.45);animation:picPulse 7s ease-in-out infinite reverse}
-  @keyframes picPulse{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}
-  .finalLine{font-size:22px;font-weight:800;color:var(--soft);text-align:center;text-shadow:0 0 30px rgba(255,0,80,0.12)}
+  /* ---------- Main card ---------- */
+  .card{width:100%;max-width:1180px;padding:16px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 40px 120px rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.03);backdrop-filter:blur(6px);}
+
+  header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  h1{font-size:20px;margin:0}
+  p.sub{margin:4px 0 0 0;opacity:.86;font-size:13px}
+
+  .controls{display:flex;gap:10px;align-items:center}
+  .playBtn{background:linear-gradient(90deg,var(--accent),var(--accent-2));border:none;padding:10px 16px;border-radius:999px;color:white;font-weight:700;cursor:pointer;box-shadow:0 12px 40px rgba(255,77,109,0.14);font-size:15px}
+  .playBtn:active{transform:scale(.99)}
+
+  /* ---------- tree container ---------- */
+  .tree-wrap{position:relative;margin-top:18px;height:74vh;max-height:820px;border-radius:12px;display:flex;align-items:center;justify-content:center}
+  .tree-bg{position:absolute;inset:0;background-position:center bottom;background-repeat:no-repeat;background-size:contain;opacity:0.98;z-index:0;filter:drop-shadow(0 40px 70px rgba(0,0,0,0.6))}
+  /* overlay glow (soft) */
+  .tree-overlay{position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(circle at 50% 65%, rgba(255,77,109,0.03), transparent 30%)}
+
+  /* ---------- small hearts (many) ---------- */
+  .small-heart{position:absolute;pointer-events:none;font-size:12px;color:var(--accent);opacity:.9;transform-origin:center;text-shadow:0 6px 18px rgba(255,77,109,0.12);animation:smallPulse 2.8s ease-in-out infinite}
+  @keyframes smallPulse{0%{transform:scale(.86)}50%{transform:scale(1.06)}100%{transform:scale(.86)}}
+
+  /* ---------- big hanging hearts (4) ---------- */
+  .big-heart{position:absolute;display:flex;align-items:center;justify-content:center;width:86px;height:86px;border-radius:999px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 18px 60px rgba(255,77,109,0.12);cursor:pointer;z-index:6;transition:transform .2s, box-shadow .2s;touch-action:none}
+  .big-heart .h{font-size:34px;color:var(--accent);filter:drop-shadow(0 8px 20px rgba(255,20,100,0.14))}
+  /* swing / hanging look */
+  .swingA{animation:swingA 3.6s ease-in-out infinite}
+  .swingB{animation:swingB 4.1s ease-in-out infinite}
+  .swingC{animation:swingC 3.2s ease-in-out infinite}
+  .swingD{animation:swingD 4.4s ease-in-out infinite}
+  @keyframes swingA{0%{transform:rotate(-8deg)}50%{transform:rotate(6deg)}100%{transform:rotate(-8deg)}}
+  @keyframes swingB{0%{transform:rotate(6deg)}50%{transform:rotate(-6deg)}100%{transform:rotate(6deg)}}
+  @keyframes swingC{0%{transform:rotate(-4deg)}50%{transform:rotate(5deg)}100%{transform:rotate(-4deg)}}
+  @keyframes swingD{0%{transform:rotate(7deg)}50%{transform:rotate(-5deg)}100%{transform:rotate(7deg)}}
+
+  /* hanging rope line */
+  .rope{position:absolute;width:2px;background:linear-gradient(180deg,#2b2b2b,#0d0d0d);height:80px;left:50%;transform:translateX(-50%);top:20px;border-radius:2px;opacity:.9}
+
+  /* ---------- question modal ---------- */
+  .modal{position:fixed;left:50%;top:72%;transform:translate(-50%,-50%);min-width:320px;max-width:520px;padding:16px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 20px 60px rgba(0,0,0,0.6);z-index:120;display:none;border:1px solid rgba(255,255,255,0.03)}
+  .modal .q{font-weight:800;margin-bottom:10px;font-size:18px}
+  .modal .opts{display:flex;gap:10px}
+  .btn{flex:1;padding:12px;border-radius:10px;text-align:center;cursor:pointer;font-weight:800;background:rgba(255,255,255,0.02)}
+  .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;border:none;box-shadow:0 12px 40px rgba(255,77,109,0.12)}
+  .btn.dodge{position:relative;transition:transform .12s ease}
+
+  /* ---------- burning reveal ---------- */
+  .burn {position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:radial-gradient(circle at center, rgba(255,90,120,0.04), rgba(0,0,0,0.6));z-index:190}
+  .burn .heart{font-size:120px;animation:burnPop 2.2s cubic-bezier(.2,.9,.2,1) forwards}
+  @keyframes burnPop{0%{transform:scale(.7);opacity:1;text-shadow:0 0 30px rgba(255,90,120,0.9)}50%{transform:scale(1.05)}100%{transform:scale(2.8);opacity:0;filter:blur(10px)}}
+
+  /* ---------- final reveal panel ---------- */
+  .reveal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:195;padding:28px}
+  .revealPanel{width:calc(100% - 60px);max-width:1100px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:16px;padding:18px;display:flex;gap:18px;align-items:center;justify-content:center;flex-wrap:wrap;backdrop-filter: blur(6px);border:1px solid rgba(255,255,255,0.03)}
+  .bigImg{width:54%;max-width:620px;border-radius:14px;box-shadow:0 30px 80px rgba(0,0,0,0.6)}
+  .sideBlock{width:38%;display:flex;flex-direction:column;gap:14px}
+  .sideBlock img{width:100%;border-radius:12px;object-fit:cover;box-shadow:0 20px 60px rgba(0,0,0,0.45)}
+  .finalLine{font-size:20px;font-weight:800;color:var(--soft);text-align:center;text-shadow:0 0 28px rgba(255,0,80,0.08)}
+
+  /* ---------- floaters (I ❤️ U) ---------- */
+  .floater{position:absolute;pointer-events:none;font-weight:800;color:var(--accent);opacity:.95;filter:drop-shadow(0 8px 20px rgba(255,20,100,0.12));animation:floatUp linear infinite}
+  @keyframes floatUp{0%{transform:translateY(40px);opacity:0}20%{opacity:1}100%{transform:translateY(-140px);opacity:0}}
+
+  /* ---------- responsive ---------- */
+  @media (max-width:820px){
+    .card{padding:10px}
+    .tree-wrap{height:64vh}
+    .big-heart{width:68px;height:68px}
+    .big-heart .h{font-size:26px}
+    .bigImg{width:92%}
+    .sideBlock{width:92%}
+  }
 </style>
 </head>
 <body>
 
-<audio id="bgm" src="song.mp3" autoplay loop></audio>
-
-<div class="tree" id="tree"></div>
-
-<div class="questionBox" id="questionBox">
-  <h2 id="qText"></h2>
-  <div class="btnRow">
-    <button id="opt1"></button>
-    <button id="opt2"></button>
+  <!-- Background decorative layers -->
+  <div class="bg-layer">
+    <div class="stars"></div>
+    <div class="stars2"></div>
   </div>
-</div>
+  <div class="vignette"></div>
+  <div class="shoot" id="shoot"><div class="tail"></div></div>
+  <div class="falling-layer" id="fallingLayer"></div>
 
-<div class="reveal" id="reveal">
-  <div class="revealPanel">
-    <div class="bigImg"><img id="bigImg" src="pic2.jpg" alt="pic2"></div>
-    <div class="sideBlock">
-      <img id="sideImg" src="pic1.jpg" alt="pic1">
-      <div class="finalLine">Your beauty shines brighter than every star, my precious bestie ❤️</div>
+  <!-- Main stage -->
+  <div class="stage">
+    <div class="card" role="main" aria-label="Love Surprise">
+      <header>
+        <div>
+          <h1>For My Bestie ❤️</h1>
+          <p class="sub">Tap any hanging heart on the tree and answer — a sweet surprise follows.</p>
+        </div>
+        <div class="controls">
+          <button class="playBtn" id="manualPlay">▶ Play (1.25x)</button>
+        </div>
+      </header>
+
+      <div class="tree-wrap" id="treeWrap">
+        <!-- tree image as background -->
+        <div id="treeBg" class="tree-bg" style="background-image:url('tree.png');"></div>
+        <div class="tree-overlay"></div>
+
+        <!-- container for small hearts -->
+        <div id="smallContainer" style="position:absolute;inset:0;pointer-events:none;z-index:3"></div>
+
+        <!-- four big hanging hearts (positions chosen to match tree branches) -->
+        <div class="big-heart swingA" id="B1" style="left:36%; top:30%;"><div class="h">❤️</div></div>
+        <div class="big-heart swingB" id="B2" style="left:54%; top:24%;"><div class="h">❤️</div></div>
+        <div class="big-heart swingC" id="B3" style="left:64%; top:36%;"><div class="h">❤️</div></div>
+        <div class="big-heart swingD" id="B4" style="left:48%; top:46%;"><div class="h">❤️</div></div>
+
+        <!-- small rope visuals for hanging feel (CSS handles placement by JS) -->
+        <div id="rope-B1" class="rope" style="left:36%; top:calc(30% - 80px);"></div>
+        <div id="rope-B2" class="rope" style="left:54%; top:calc(24% - 80px);"></div>
+        <div id="rope-B3" class="rope" style="left:64%; top:calc(36% - 80px);"></div>
+        <div id="rope-B4" class="rope" style="left:48%; top:calc(46% - 80px);"></div>
+      </div>
     </div>
   </div>
-</div>
+
+  <!-- question modal -->
+  <div class="modal" id="modal">
+    <div class="q" id="qText">Question?</div>
+    <div class="opts">
+      <div class="btn" id="optA"></div>
+      <div class="btn primary" id="optB"></div>
+    </div>
+  </div>
+
+  <!-- burning overlay -->
+  <div class="burn" id="burn"><div class="heart">❤️🔥</div></div>
+
+  <!-- reveal panel -->
+  <div class="reveal" id="reveal">
+    <div class="revealPanel">
+      <div class="bigImg"><img id="bigImg" src="pic2.jpg" alt="pic2"></div>
+      <div class="sideBlock">
+        <img id="sideImg" src="pic1.jpg" alt="pic1">
+        <div class="finalLine" id="finalLine">Your beauty shines brighter than every star, my precious friend ❤️</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- floating I ❤️ U layer -->
+  <div id="floaters" style="position:fixed;inset:0;pointer-events:none;z-index:200"></div>
+
+  <!-- audio -->
+  <audio id="audio" src="song.mp3" preload="auto"></audio>
 
 <script>
-const tree=document.getElementById('tree');
-function makeBranch(rot,len){
-  const b=document.createElement('div');b.className='branch';b.style.height=len+'px';b.style.transform='rotate('+rot+'deg)';tree.appendChild(b)}
-makeBranch(0,150);makeBranch(-40,110);makeBranch(40,110);makeBranch(-70,80);makeBranch(70,80);
+/* -------------------------
+   Initialization & audio
+   ------------------------- */
+const audio = document.getElementById('audio');
+audio.playbackRate = 1.25;
+audio.volume = 0.76;
+// try autoplay; fallback to first interaction
+function tryPlay(){ audio.play().catch(()=>{/* blocked -> will play later on first interaction */}); }
+window.addEventListener('load', ()=> tryPlay());
+function onFirstInteract(){ tryPlay(); window.removeEventListener('click', onFirstInteract); window.removeEventListener('touchstart', onFirstInteract); }
+window.addEventListener('click', onFirstInteract); window.addEventListener('touchstart', onFirstInteract);
+document.getElementById('manualPlay').addEventListener('click', tryPlay);
 
-function spawnLeaf(){const l=document.createElement('div');l.className='leaf';l.style.left=Math.random()*window.innerWidth+'px';l.style.top='-20px';document.body.appendChild(l);setTimeout(()=>l.remove(),10000)}
-setInterval(spawnLeaf,800);
+/* -------------------------
+   Shooting star occasional
+   ------------------------- */
+const shoot = document.getElementById('shoot');
+function runShoot(){
+  shoot.style.opacity = 1;
+  shoot.style.left = '-25%';
+  shoot.style.top = (8 + Math.random()*36) + '%';
+  shoot.style.transition = 'left 1.2s linear, opacity .8s';
+  shoot.style.left = '120%';
+  setTimeout(()=> { shoot.style.opacity = 0; shoot.style.left='-25%'; }, 1400);
+}
+setInterval(()=> { if(Math.random() < 0.6) runShoot(); }, 6000);
 
-const hearts=[{x:-60,y:200},{x:60,y:200},{x:-90,y:100},{x:90,y:100}];
-hearts.forEach((h,i)=>{const el=document.createElement('div');el.className='heart';el.style.left='calc(50% + '+h.x+'px)';el.style.bottom=h.y+'px';tree.appendChild(el);el.onclick=()=>askQ(i)});
+/* -------------------------
+   Falling hearts layer
+   ------------------------- */
+const fallingLayer = document.getElementById('fallingLayer');
+function spawnFalling(){
+  const el = document.createElement('div');
+  el.className = 'fheart';
+  el.innerText = '❤️';
+  const size = 12 + Math.random()*36;
+  el.style.fontSize = size + 'px';
+  el.style.left = (5 + Math.random()*90) + 'vw';
+  el.style.top = '-8vh';
+  el.style.opacity = (0.6 + Math.random()*0.4);
+  const dur = 5 + Math.random()*6;
+  el.style.transition = `transform ${dur}s linear, top ${dur}s linear, opacity ${dur}s`;
+  fallingLayer.appendChild(el);
+  requestAnimationFrame(()=> {
+    el.style.top = (110 + Math.random()*10) + 'vh';
+    el.style.transform = `translateY(${window.innerHeight}px) rotate(${Math.random()*360}deg)`;
+    el.style.opacity = 0;
+  });
+  setTimeout(()=> el.remove(), (dur*1000)+400);
+}
+setInterval(spawnFalling, 650);
 
-const questions=[
-  {q:"Why you are so beautiful?",a1:"Because I smile",a2:"Because of you"},
-  {q:"Apki aawaaz mujhe maar degi kisi din, gaogi 'Janemann' kya?",a1:"Yes",a2:"No"},
-  {q:"Agar mai poochu: Momos ya Mujhe — kisko chunogi?",a1:"Momos",a2:"Mujhe"},
-  {q:"I know you are cute — kya tum meri bestie banogi ache wali?",a1:"Yes",a2:"No"}
+/* -------------------------
+   Small hearts scattered over tree
+   ------------------------- */
+const smallContainer = document.getElementById('smallContainer');
+function scatterSmallHearts(n=64){
+  smallContainer.innerHTML = '';
+  for(let i=0;i<n;i++){
+    const el = document.createElement('div');
+    el.className = 'small-heart';
+    el.innerText = '❤️';
+    // place within percent area roughly inside tree area
+    const left = 12 + Math.random()*76;
+    const top = 10 + Math.random()*70;
+    el.style.left = left + '%';
+    el.style.top = top + '%';
+    el.style.fontSize = (8 + Math.random()*12) + 'px';
+    el.style.opacity = (0.6 + Math.random()*0.5);
+    el.style.animationDelay = (Math.random()*2)+'s';
+    smallContainer.appendChild(el);
+  }
+}
+scatterSmallHearts(64);
+setInterval(()=> {
+  // gently vary scale
+  document.querySelectorAll('.small-heart').forEach(s=>{
+    s.style.transform = `scale(${0.9 + Math.random()*0.2}) translateY(${Math.random()*6-3}px)`;
+  });
+}, 2200);
+
+/* -------------------------
+   Big hearts (nodes) logic
+   ------------------------- */
+const nodeIds = ['B1','B2','B3','B4'];
+const nodes = nodeIds.map(id => document.getElementById(id));
+const modal = document.getElementById('modal');
+const qText = document.getElementById('qText');
+const optA = document.getElementById('optA');
+const optB = document.getElementById('optB');
+const burn = document.getElementById('burn');
+const reveal = document.getElementById('reveal');
+const floaters = document.getElementById('floaters');
+
+const questions = [
+  {q:"Why you are so beautiful?", a1:"Because I smile", a2:"Because of you"},
+  {q:"Apki aawaaz mujhe maar degi kisi din, gaogi 'Janemann' kya?", a1:"Yes", a2:"No"},
+  {q:"Agar mai poochu: Momos ya Mujhe — kisko chunogi?", a1:"Momos", a2:"Mujhe"},
+  {q:"I know you are cute — kya tum meri besti banogi ache wali?", a1:"Yes", a2:"No"}
 ];
-let qi=0;
-const qBox=document.getElementById('questionBox');const qText=document.getElementById('qText');const opt1=document.getElementById('opt1');const opt2=document.getElementById('opt2');
 
-function askQ(i){qi=i;showQ()}
-function showQ(){const q=questions[qi];qBox.style.display='flex';qText.textContent=q.q;opt1.textContent=q.a1;opt2.textContent=q.a2}
+let seq = 0;
+let locked = false; // to avoid double clicks
 
-opt1.onclick=()=>nextQ(true);opt2.onclick=()=>nextQ(false);
-function nextQ(ans){if(qi===2&&ans){ // momos select
-  opt1.style.position="relative";opt1.style.left="2000px";return}
-  if(qi<questions.length-1){qi++;showQ()}else{qBox.style.display='none';document.getElementById('reveal').style.display='flex'}}
-  
-/* speed up song */
-const bgm=document.getElementById('bgm');bgm.playbackRate=1.25;
+// add pointer and touch events
+nodes.forEach((el,i)=>{
+  // make ropes align visually (optional)
+  el.addEventListener('pointerdown', (e)=>{
+    if(locked) return;
+    // show question in sequence order (seq)
+    if(seq >= questions.length) return;
+    openQuestion(seq, el, i);
+  });
+});
+
+/* show modal for a question index */
+function openQuestion(idx, clickedNode, nodeIndex){
+  locked = true;
+  // small visual pop
+  clickedNode.animate([{transform:'scale(1.06)'},{transform:'scale(1)'}],{duration:260});
+  qText.textContent = questions[idx].q;
+  optA.textContent = questions[idx].a1;
+  optB.textContent = questions[idx].a2;
+  modal.style.display = 'block';
+  // remove previous handlers
+  optA.onclick = optB.onclick = null;
+
+  if(idx === 2){
+    // Momos behavior: optA (Momos) dodges
+    optA.onclick = ()=> {
+      dodge(optA);
+      tinyToast("Momos is playful 😜 Try other option!");
+    };
+    optB.onclick = ()=> {
+      modal.style.display = 'none';
+      seq++; heartBurst(8); locked = false;
+      tinyToast("You chose wisely ❤️");
+    };
+  } else if(idx === 3){
+    // final yes/no
+    optA.onclick = ()=> { // Yes
+      modal.style.display = 'none';
+      seq++;
+      heartBurst(12); locked = false;
+      triggerFinalReveal();
+    };
+    optB.onclick = ()=> { // No
+      modal.style.display = 'none';
+      locked = false;
+      tinyToast("Katti hu tumse ab me 😤");
+      showBrokenHeart();
+    };
+  } else {
+    optA.onclick = ()=> { modal.style.display = 'none'; seq++; heartBurst(6); locked = false; tinyToast("Nice!"); };
+    optB.onclick = ()=> { modal.style.display = 'none'; seq++; heartBurst(6); locked = false; tinyToast("Okay :)"); };
+  }
+}
+
+/* dodge function - playful */
+function dodge(btn){
+  btn.classList.add('dodge');
+  const r = 80 + Math.random()*120;
+  const ang = Math.random()*Math.PI*2;
+  btn.style.transform = `translate(${Math.cos(ang)*r}px, ${Math.sin(ang)*r}px)`;
+  setTimeout(()=> { btn.style.transform=''; btn.classList.remove('dodge'); }, 520);
+}
+
+/* tiny toast */
+function tinyToast(txt){
+  const t = document.createElement('div'); t.textContent = txt;
+  Object.assign(t.style,{position:'fixed',left:'50%',transform:'translateX(-50%)',bottom:'8%',background:'linear-gradient(90deg,var(--accent),var(--accent-2))',padding:'8px 12px',borderRadius:'12px',zIndex:250,color:'#fff',fontWeight:800});
+  document.body.appendChild(t);
+  setTimeout(()=> { t.style.transition='opacity .5s'; t.style.opacity=0; setTimeout(()=> t.remove(),500)},1600);
+}
+
+/* heart burst animation */
+function heartBurst(n){
+  for(let i=0;i<n;i++){
+    const el = document.createElement('div'); el.className='fheart'; el.innerText='❤️';
+    const size = 12 + Math.random()*34; el.style.fontSize = size + 'px';
+    el.style.left = (45 + Math.random()*20) + 'vw'; el.style.top = (35 + Math.random()*20) + 'vh';
+    el.style.opacity = 1; el.style.position = 'fixed'; el.style.zIndex = 120;
+    document.body.appendChild(el);
+    setTimeout(()=> {
+      el.style.transition = 'transform 1000ms cubic-bezier(.2,.9,.2,1), opacity 900ms';
+      el.style.transform = `translateY(${120 + Math.random()*220}px) rotate(${Math.random()*180-90}deg) scale(${0.6+Math.random()*0.9})`;
+      el.style.opacity = 0;
+    },30);
+    setTimeout(()=> el.remove(), 1100);
+  }
+}
+
+/* broken heart */
+function showBrokenHeart(){
+  const b = document.createElement('div'); b.textContent='💔';
+  Object.assign(b.style,{position:'fixed',left:'50%',top:'20%',transform:'translateX(-50%)',fontSize:'64px',zIndex:260});
+  document.body.appendChild(b); setTimeout(()=> b.remove(),1400);
+}
+
+/* -------------------------
+   Trigger final reveal (no audio restart!)
+   ------------------------- */
+const burnOverlay = document.getElementById('burn');
+const revealPanel = document.getElementById('reveal');
+function triggerFinalReveal(){
+  burnOverlay.style.display = 'flex';
+  setTimeout(()=> {
+    burnOverlay.style.display = 'none';
+    revealPanel.style.display = 'flex';
+    // subtle pop animations
+    document.querySelector('.bigImg').animate([{transform:'scale(.94)'},{transform:'scale(1)'}],{duration:520,easing:'cubic-bezier(.2,.9,.2,1)'});
+    // spawn floaters
+    spawnFloaters(12);
+    // DO NOT restart audio. Only ensure audio is playing (may be blocked earlier)
+    try{ audio.play().catch(()=>{}); } catch(e){}
+  },2200);
+}
+
+/* spawn I ❤️ U floaters */
+function spawnFloaters(n){
+  for(let i=0;i<n;i++){
+    const el = document.createElement('div'); el.className='floater'; el.textContent='I ❤️ U';
+    el.style.left = (8 + Math.random()*84) + 'vw';
+    el.style.bottom = (6 + Math.random()*45) + 'vh';
+    el.style.fontSize = (12 + Math.random()*26) + 'px';
+    floaters.appendChild(el);
+    setTimeout(()=> el.remove(), 6000 + Math.random()*2000);
+  }
+}
+
+/* -------------------------
+   Place ropes visually under node hearts (sync) - optional
+   ------------------------- */
+function alignRopes(){
+  nodeIds.forEach((id, idx)=>{
+    const node = document.getElementById(id);
+    const rope = document.getElementById('rope-' + id);
+    if(!node || !rope) return;
+    const rect = node.getBoundingClientRect();
+    rope.style.left = (rect.left + rect.width/2) + 'px';
+    rope.style.top = (rect.top - 80) + 'px';
+    rope.style.height = (80) + 'px';
+  });
+}
+setTimeout(()=> { alignRopes(); }, 800);
+window.addEventListener('resize', ()=> setTimeout(alignRopes,200));
+
+/* -------------------------
+   Spawn more small hearts occasionally for life
+   ------------------------- */
+setInterval(()=> {
+  const el = document.createElement('div'); el.className='small-heart'; el.innerText='❤️';
+  const left = 15 + Math.random()*70; const top = 8 + Math.random()*72;
+  el.style.left = left + '%'; el.style.top = top + '%'; el.style.fontSize = (8 + Math.random()*12) + 'px';
+  el.style.opacity = 0.6 + Math.random()*0.4;
+  el.style.animationDelay = '0s';
+  smallContainer.appendChild(el);
+  setTimeout(()=> { if(el) el.remove(); }, 8000);
+}, 1200);
+
+/* -------------------------
+   Utility: tiny helper to show toast on first load
+   ------------------------- */
+setTimeout(()=> tinyToast("Tap any hanging heart to start the questions ❤️"), 900);
+
+/* -------------------------
+   Accessibility: if audio blocked, start on tap
+   ------------------------- */
+/* handled above */
+
+/* -------------------------
+   DONE
+   ------------------------- */
 </script>
 </body>
 </html>
