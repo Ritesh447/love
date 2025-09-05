@@ -3,418 +3,457 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Love Game — For My Bestie ❤️</title>
+<title>Love Surprise — For My Bestie ❤️</title>
 <style>
   :root{
-    --bg:#06060b; --accent:#ff4d6d; --soft:#ff9bb3; --white:#fff;
+    --bg1:#05040a; --bg2:#0b1220; --accent:#ff4d6d; --soft:#ff9bb3; --gold:#ffd166;
   }
-  html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial; background:var(--bg); color:var(--white); -webkit-font-smoothing:antialiased;}
-  /* Starry background */
-  .stars{position:fixed;inset:0;z-index:-10;overflow:hidden;background:radial-gradient(ellipse at bottom, rgba(10,10,20,0.7) 0%, rgba(5,5,12,1) 60%);}
-  .star{position:absolute;width:2px;height:2px;background:rgba(255,255,255,0.9);border-radius:50%;opacity:0.9;box-shadow:0 0 6px rgba(255,255,255,0.85);}
-  /* falling tiny glowing hearts (decor) */
-  .falling{position:fixed;inset:0;pointer-events:none;z-index:-5;}
-  .fheart{position:absolute;font-size:18px;opacity:0.9;filter:drop-shadow(0 6px 8px rgba(255,20,100,0.2));}
-  /* Center area */
-  .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px;box-sizing:border-box;flex-direction:column;gap:18px}
-  .card{width:100%;max-width:920px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));border-radius:18px;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,0.6);backdrop-filter: blur(6px);border:1px solid rgba(255,255,255,0.03)}
-  h1{margin:0;font-size:20px;letter-spacing:0.2px}
-  p.small{margin:6px 0 0 0;font-size:13px;opacity:0.8}
-  /* Play button */
-  .playBtn{display:inline-flex;align-items:center;gap:10px;padding:12px 18px;background:linear-gradient(90deg,var(--accent),#ff7a88);border-radius:999px;color:white;font-weight:600;border:none;cursor:pointer;font-size:16px;box-shadow:0 8px 30px rgba(255,77,109,0.18)}
-  .playBtn:active{transform:scale(.98)}
-  /* Tree area */
-  .stage{display:flex;gap:20px;align-items:flex-start;justify-content:center;padding:24px 10px}
-  .tree-wrap{position:relative;width:420px;max-width:86vw;height:520px;display:flex;align-items:center;justify-content:center}
-  svg.tree-svg{width:100%;height:100%;overflow:visible}
-  /* Draw animation for trunk/branches */
-  .path-anim{stroke-linecap:round;stroke-linejoin:round;stroke-width:6;stroke:#2d1e10;fill:none;stroke-dasharray:1000;stroke-dashoffset:1000;animation:draw 2s ease forwards}
-  @keyframes draw{to{stroke-dashoffset:0}}
-  /* Hearts as leaf nodes */
-  .node-heart{cursor:pointer;font-size:26px;transform-origin:center;transition:transform .22s ease, filter .2s, opacity .25s}
-  .node-heart:hover{transform:scale(1.18)}
-  /* falling hearts from tree (larger) */
-  .falling-large{position:absolute;left:0;top:0;pointer-events:none}
-  /* Questions modal */
-  .modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:92%;max-width:420px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));padding:18px;border-radius:14px;box-shadow:0 18px 50px rgba(0,0,0,0.6);z-index:40;border:1px solid rgba(255,255,255,0.04)}
-  .qtxt{font-weight:700;font-size:16px;margin-bottom:10px}
-  .opts{display:flex;gap:10px;flex-wrap:wrap}
-  .opt{flex:1;min-width:120px;text-align:center;padding:10px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.02);cursor:pointer;user-select:none}
-  .opt.primary{background:linear-gradient(90deg,var(--accent),#ff7a88);color:white;border:none}
-  .opt.disabled{opacity:.6;transform:translateY(0);animation:shake 0.6s;pointer-events:none}
-  @keyframes shake{10%{transform:translateX(-6px)}30%{transform:translateX(6px)}50%{transform:translateX(-4px)}70%{transform:translateX(4px)}90%{transform:translateX(0)}}
-  /* Burning heart effect (brief) */
-  .burn-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);z-index:80;pointer-events:none}
-  .burn-heart{font-size:110px;animation:burnpop 2.2s ease forwards}
-  @keyframes burnpop{0%{opacity:1;transform:scale(0.6) rotate(-10deg);filter:drop-shadow(0 0 20px rgba(255,60,120,0.6))}50%{transform:scale(1.05) rotate(6deg);filter:blur(0px)}100%{opacity:0;transform:scale(3) rotate(30deg);filter:blur(6px)}}
-  /* Large image reveal */
-  .reveal{display:flex;flex-direction:column;align-items:center;gap:14px;justify-content:center;padding:10px}
-  .big-pic{width:86vw;max-width:520px;height:auto;border-radius:14px;object-fit:cover;box-shadow:0 20px 60px rgba(0,0,0,0.6);transform-origin:center;transition:transform .45s ease,opacity .4s}
-  .side-pics{display:flex;gap:18px;flex-wrap:nowrap;justify-content:center;align-items:center;transform:translateY(30px);opacity:0;transition:all .6s ease}
-  .side-pics img{width:38vw;max-width:280px;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,0.6)}
-  .love-line{font-size:18px;color:var(--soft);text-align:center;text-shadow:0 0 20px rgba(255,0,80,0.15)}
-  /* small helper & responsive */
-  .muted{opacity:.7;font-size:13px}
-  @media (max-width:600px){
-    .tree-wrap{height:420px}
-    .node-heart{font-size:22px}
-    .big-pic{max-width:92vw}
-    .side-pics img{width:44vw}
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial; background:var(--bg1); color:#fff; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+  /* full screen stage */
+  .stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:18px;box-sizing:border-box;flex-direction:column;gap:18px;z-index:1}
+  .card{width:100%;max-width:1060px;margin:0 auto;padding:18px;border-radius:16px;box-shadow:0 30px 80px rgba(7,8,14,0.7);background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03)}
+  header{display:flex;justify-content:space-between;align-items:center;gap:12px}
+  h1{margin:0;font-size:20px;letter-spacing:0.4px}
+  p.desc{margin:4px 0 0 0;font-size:13px;color:rgba(255,255,255,0.75)}
+  .playBtn{background:linear-gradient(90deg,var(--accent),#ff7a88);border:none;padding:12px 20px;border-radius:999px;color:white;font-weight:700;cursor:pointer;box-shadow:0 10px 30px rgba(255,77,109,0.18);font-size:16px}
+  .playBtn:active{transform:scale(.99)}
+
+  /* starfield: many tiny dots via box-shadow trick for performance */
+  .starfield{position:fixed;inset:0;z-index:-4;background:radial-gradient(ellipse at bottom, rgba(10,10,20,0.6) 0%, rgba(5,5,12,1) 60%);}
+  .stars{position:absolute;inset:0;opacity:0.9;filter:contrast(120%);}
+  .stars::before{
+    content:"";
+    position:absolute;inset:0;
+    background:
+      radial-gradient(2px 2px at 10% 20%, rgba(255,255,255,0.95), transparent),
+      radial-gradient(1.5px 1.5px at 20% 70%, rgba(255,255,255,0.85), transparent),
+      radial-gradient(1.3px 1.3px at 35% 35%, rgba(255,255,255,0.9), transparent),
+      radial-gradient(1px 1px at 60% 20%, rgba(255,255,255,0.8), transparent),
+      radial-gradient(1.7px 1.7px at 80% 60%, rgba(255,255,255,0.88), transparent),
+      radial-gradient(1px 1px at 90% 10%, rgba(255,255,255,0.7), transparent);
+    background-repeat:repeat;
+    background-size: 100px 100px;
+    animation: twinkle 6s linear infinite;
+  }
+  @keyframes twinkle{50%{opacity:.7}100%{opacity:1}}
+
+  /* shooting star */
+  .shoot{position:fixed;z-index:-3;left:-10%;top:10%;opacity:0;transform:rotate(-30deg);filter:drop-shadow(0 6px 14px rgba(255,255,255,0.08));}
+  .shoot .tail{width:220px;height:2px;background:linear-gradient(90deg, rgba(255,255,255,0.95), rgba(255,255,255,0));box-shadow:0 0 18px rgba(255,255,255,0.4);}
+
+  /* falling decorative hearts */
+  .fallingLayer{position:fixed;inset:0;pointer-events:none;z-index:-2}
+  .fheart{position:absolute;font-size:20px;filter:drop-shadow(0 6px 18px rgba(255,20,100,0.12));opacity:0.95;transform-origin:center}
+
+  /* tree area */
+  .tree-area{display:flex;align-items:center;justify-content:center;padding:30px 0}
+  .tree-wrap{position:relative;width:720px;max-width:92vw;height:560px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:20px;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 -40px 120px rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.03)}
+  svg.tree{width:86%;height:86%}
+
+  /* trunk + branches draw animation */
+  .draw { stroke:#3b2b19; stroke-width:6; fill:none; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:2000; stroke-dashoffset:2000; animation: drawLine 2.6s ease forwards; }
+  .draw.delay { animation-delay:0.25s }
+  @keyframes drawLine { to { stroke-dashoffset:0 } }
+
+  /* heart nodes container (absolute) */
+  .node-layer{position:absolute;inset:0;pointer-events:none}
+
+  .node { position:absolute; pointer-events:auto; cursor:pointer; width:48px; height:48px; display:flex; align-items:center; justify-content:center; font-size:26px; background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.06), rgba(255,255,255,0.02)); border-radius:50%; box-shadow:0 10px 30px rgba(255,77,109,0.12); transition: transform .22s ease, box-shadow .22s; }
+  .node:hover{ transform:scale(1.08) }
+  .node .h{ color:var(--accent); text-shadow:0 6px 20px rgba(255,77,109,0.18); filter: drop-shadow(0 8px 18px rgba(255,77,109,0.12)); font-size:22px; }
+  .node.pulse { animation: pop 1.4s infinite; }
+  @keyframes pop { 0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)} }
+
+  /* question modal */
+  .modal{position:fixed;left:50%;top:70%;transform:translate(-50%,-50%);width:92%;max-width:480px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));padding:16px;border-radius:12px;box-shadow:0 18px 50px rgba(0,0,0,0.6);z-index:40;border:1px solid rgba(255,255,255,0.04);display:none;}
+  .q{font-weight:800;font-size:18px;margin-bottom:10px}
+  .opts{display:flex;gap:12px}
+  .btnOpt{flex:1;padding:12px;border-radius:10px;cursor:pointer;text-align:center;font-weight:700;border:1px solid rgba(255,255,255,0.03);background:rgba(255,255,255,0.02)}
+  .btnOpt.primary{background:linear-gradient(90deg,var(--accent),#ff7a88);color:white;border:none}
+  .btnOpt.dodge{position:relative;transition:all .18s ease}
+
+  /* burning overlay */
+  .burnOverlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:radial-gradient(circle at center, rgba(255,120,140,0.06), rgba(0,0,0,0.6));z-index:80}
+  .burnHeart{font-size:140px;animation:burnPop 2.2s cubic-bezier(.2,.9,.2,1) forwards}
+  @keyframes burnPop{0%{transform:scale(.6);opacity:1;text-shadow:0 0 28px rgba(255,90,120,0.9)}60%{transform:scale(1.1);opacity:1}100%{transform:scale(2.6);opacity:0;filter:blur(8px)}}
+
+  /* reveal area */
+  .reveal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;gap:18px;z-index:85;padding:28px}
+  .revealPanel{width:100%;max-width:980px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:16px;padding:18px;backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.03);display:flex;gap:18px;align-items:center;justify-content:center;flex-wrap:wrap}
+  .big{width:52%;max-width:520px;border-radius:14px;box-shadow:0 30px 80px rgba(0,0,0,0.6);transform-origin:center;transition:transform .5s cubic-bezier(.2,.9,.2,1)}
+  .small{width:38%;max-width:360px;border-radius:12px;display:flex;gap:12px;flex-direction:column}
+  .small img, .big img{width:100%;height:auto;border-radius:12px;object-fit:cover;box-shadow:0 20px 60px rgba(0,0,0,0.45)}
+  .finalLine{font-size:20px;color:var(--soft);text-shadow:0 0 28px rgba(255,0,80,0.12);font-weight:700;text-align:center}
+
+  /* floating I ❤️ U bubbles */
+  .floaters{position:fixed;inset:0;pointer-events:none;z-index:86}
+  .floater{position:absolute;font-size:22px;color:var(--accent);opacity:0.95;filter:drop-shadow(0 8px 16px rgba(255,20,100,0.12));animation:floatUp linear infinite}
+  @keyframes floatUp{0%{transform:translateY(40px);opacity:0}20%{opacity:1}100%{transform:translateY(-140px);opacity:0}}
+
+  /* responsive */
+  @media (max-width:720px){
+    .tree-wrap{height:66vh}
+    .big{width:92%}
+    .small{width:92%}
   }
 </style>
 </head>
 <body>
+  <!-- decorative layers -->
+  <div class="starfield"><div class="stars"></div></div>
+  <div class="shoot" id="shoot"><div class="tail"></div></div>
+  <div class="fallingLayer" id="fallingLayer"></div>
+  <div class="floaters" id="floaters"></div>
 
-<div class="stars" id="stars"></div>
-<div class="falling" id="falling"></div>
-
-<div class="wrap">
-  <div class="card" role="main" aria-label="Love Game Card">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
-      <div>
-        <h1>For my bestie ❤️</h1>
-        <p class="small muted">Click the heart on the tree and answer — a little surprise awaits after you say "Yes"!</p>
-      </div>
-      <div>
-        <button class="playBtn" id="startBtn" title="Play Janemann">▶ Play Song (Janemann)</button>
-      </div>
-    </div>
-
-    <div class="stage" style="margin-top:18px;">
-      <div class="tree-wrap" aria-hidden="false" id="treeWrap">
-        <!-- SVG tree (draw animation) -->
-        <svg class="tree-svg" viewBox="0 0 420 520" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Love tree">
-          <!-- trunk + branches -->
-          <path id="trunk" class="path-anim" d="M210 500 C210 420 210 420 210 360 C200 320 180 300 160 270
-            C140 240 120 210 140 180 C160 150 190 140 220 135
-            C255 128 280 140 305 165 C325 185 340 215 360 240
-            C380 265 400 300 370 330 C345 355 320 360 300 380" stroke="#2b1609" stroke-width="8" fill="none"/>
-          <!-- small branch -->
-          <path class="path-anim" d="M210 280 C178 260 148 230 130 200" stroke="#2b1609" stroke-width="6" fill="none"/>
-
-          <!-- nodes where hearts will be placed (positions chosen) -->
-          <!-- We'll overlay HTML hearts positioned via JS for easier click control -->
-        </svg>
-
-        <!-- Heart nodes (absolute positioned) -->
-        <div id="nodeContainer" style="position:absolute;inset:0;pointer-events:none">
-          <!-- buttons will be injected by JS -->
+  <!-- main UI -->
+  <div class="stage">
+    <div class="card" role="main" aria-label="Love Surprise">
+      <header>
+        <div>
+          <h1>For my bestie ❤️</h1>
+          <p class="desc">Tap a heart on the tree and answer — a sweet surprise will follow.</p>
         </div>
+        <div>
+          <button class="playBtn" id="playBtn">▶ Play (Janemann) — 1.5x</button>
+        </div>
+      </header>
 
-        <!-- falling big hearts from tree -->
-        <div id="fallLarge" class="falling-large" aria-hidden="true"></div>
+      <div class="tree-area" style="margin-top:14px">
+        <div class="tree-wrap" id="treeWrap">
+          <!-- SVG Tree (drawn via CSS animation) -->
+          <svg class="tree" viewBox="0 0 420 520" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+            <!-- trunk -->
+            <path class="draw delay" d="M210 500 C210 420 210 360 210 320
+              C190 280 170 260 150 230
+              C130 200 120 170 140 150
+              C170 120 200 110 230 105
+              C265 100 290 110 315 140
+              C340 170 355 200 375 230
+              C395 260 410 300 380 330
+              C350 360 320 370 300 390" />
+            <!-- branch -->
+            <path class="draw" d="M210 300 C178 280 148 250 130 220" />
+            <path class="draw" d="M260 240 C300 220 340 200 360 170" />
+          </svg>
+
+          <!-- Node hearts overlay (positioned by JS) -->
+          <div class="node-layer" id="nodeLayer" aria-hidden="false"></div>
+
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- modal for questions -->
-  <div id="modal" style="display:none"></div>
-
-  <!-- reveal area after final success -->
-  <div id="revealArea" style="display:none" class="card" aria-live="polite">
-    <div class="reveal" id="revealContent">
-      <img id="bigPic" class="big-pic" src="pic2.jpg" alt="Picture" style="transform:scale(.9);opacity:0" />
-      <div class="muted">Tap the picture to see more...</div>
-      <div class="side-pics" id="sidePics" style="display:flex">
-        <img id="side1" src="pic1.jpg" alt="pic1" style="opacity:0; transform:translateY(10px)">
-        <img id="side2" src="pic2.jpg" alt="pic2" style="opacity:0; transform:translateY(10px)">
-      </div>
-      <div class="love-line" id="finalLine" style="display:none">Your beauty shines brighter than every star, my precious friend ❤️</div>
+  <!-- modal -->
+  <div class="modal" id="modal" role="dialog" aria-modal="true">
+    <div class="q" id="qtxt"></div>
+    <div class="opts">
+      <div class="btnOpt" id="optA"></div>
+      <div class="btnOpt primary" id="optB"></div>
     </div>
   </div>
-</div>
 
-<!-- burning overlay -->
-<div id="burn" style="display:none" class="burn-overlay"><div class="burn-heart">❤️🔥</div></div>
+  <!-- burning overlay -->
+  <div class="burnOverlay" id="burnOverlay"><div class="burnHeart">❤️🔥</div></div>
 
-<!-- audio (must be at root named exactly song.mp3) -->
-<audio id="audio" src="song.mp3" preload="auto"></audio>
+  <!-- reveal area -->
+  <div class="reveal" id="reveal">
+    <div class="revealPanel">
+      <div class="big"><img id="bigImg" src="pic2.jpg" alt="Picture" /></div>
+      <div class="small">
+        <img id="small1" src="pic1.jpg" alt="pic1" />
+        <div class="finalLine" id="finalLine">Your beauty shines brighter than every star, my precious friend ❤️</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- audio -->
+  <audio id="audio" src="song.mp3" preload="auto"></audio>
 
 <script>
-/* ---------- Helper: create subtle stars ---------- */
-(function makeStars(){
-  const s = document.getElementById('stars');
-  const count = Math.floor(window.innerWidth / 6);
-  for(let i=0;i<count;i++){
-    const el = document.createElement('div');
-    el.className = 'star';
-    const size = Math.random()*2.2 + .8;
-    el.style.width = size + 'px';
-    el.style.height = size + 'px';
-    el.style.left = Math.random()*100 + '%';
-    el.style.top = Math.random()*100 + '%';
-    el.style.opacity = Math.random()*0.9 + 0.2;
-    s.appendChild(el);
-  }
-})();
+/* ========== Setup & autoplay ========== */
+const audio = document.getElementById('audio');
+audio.playbackRate = 1.5;
+audio.volume = 0.75;
 
-/* ---------- falling decorative hearts ---------- */
-(function heartFallLoop(){
-  const wrap = document.getElementById('falling');
-  function spawn(){
+// Try autoplay (some browsers block; fallback on first interaction)
+function tryPlay(){
+  audio.play().catch(()=>{/*blocked*/});
+}
+window.addEventListener('load', ()=> {
+  tryPlay();
+});
+// fallback: play on any first user interaction if blocked
+function enableOnFirstInteraction(){
+  tryPlay();
+  window.removeEventListener('click', enableOnFirstInteraction);
+  window.removeEventListener('touchstart', enableOnFirstInteraction);
+}
+window.addEventListener('click', enableOnFirstInteraction);
+window.addEventListener('touchstart', enableOnFirstInteraction);
+
+/* ========== shooting star schedule ========== */
+const shoot = document.getElementById('shoot');
+function runShootingStar(){
+  shoot.style.opacity = 1;
+  shoot.style.left = '-15%';
+  shoot.style.top = (10 + Math.random()*30) + '%';
+  shoot.style.transition = 'transform 1.2s linear, left 1.2s linear, opacity .6s';
+  shoot.style.transform = 'translateX(140vw) rotate(-30deg)';
+  setTimeout(()=> {
+    shoot.style.opacity = 0;
+    shoot.style.transform = 'translateX(0)';
+  },1300);
+}
+setInterval(()=> { if(Math.random() < 0.6) runShootingStar(); }, 6000);
+
+/* ========== floating hearts (decor) ========== */
+const fallingLayer = document.getElementById('fallingLayer');
+function spawnFloatingHeart(){
+  const el = document.createElement('div');
+  el.className = 'fheart';
+  el.innerText = '❤️';
+  const size = 14 + Math.random()*28;
+  el.style.fontSize = size + 'px';
+  el.style.left = (5 + Math.random()*90) + 'vw';
+  el.style.top = (-10 - Math.random()*6) + 'vh';
+  const dur = 5 + Math.random()*6;
+  el.style.transition = `transform ${dur}s linear, top ${dur}s linear, opacity ${dur}s`;
+  fallingLayer.appendChild(el);
+  requestAnimationFrame(()=> {
+    el.style.top = (110 + Math.random()*10) + 'vh';
+    el.style.transform = `translateY(${window.innerHeight}px) rotate(${Math.random()*360}deg)`;
+    el.style.opacity = 0;
+  });
+  setTimeout(()=> el.remove(), (dur*1000)+200);
+}
+setInterval(spawnFloatingHeart, 650);
+
+/* ========== Node hearts creation & exact positioning ========== */
+/* Coordinates are chosen relative to the svg viewBox (420x520). We'll convert to pixel positions inside the treeWrap */
+const nodeDefs = [
+  {id:'n1', x:225, y:115, qIndex:0},
+  {id:'n2', x:150, y:170, qIndex:1},
+  {id:'n3', x:285, y:200, qIndex:2},
+  {id:'n4', x:200, y:245, qIndex:3}
+];
+const nodeLayer = document.getElementById('nodeLayer');
+function placeNodes(){
+  const wrap = document.getElementById('treeWrap');
+  const rect = wrap.getBoundingClientRect();
+  nodeLayer.innerHTML = '';
+  nodeDefs.forEach((d,i)=>{
+    const el = document.createElement('div');
+    el.className = 'node pulse';
+    el.id = d.id;
+    el.innerHTML = `<div class="h">❤️</div>`;
+    // convert viewbox coords to absolute pixel within wrap
+    const px = (d.x / 420) * rect.width;
+    const py = (d.y / 520) * rect.height;
+    el.style.left = (px - 24) + 'px';
+    el.style.top = (py - 24) + 'px';
+    el.style.pointerEvents = 'auto';
+    nodeLayer.appendChild(el);
+    // add click handler
+    el.addEventListener('click', ()=> onNodeClick(i, el));
+  });
+}
+window.addEventListener('resize', placeNodes);
+setTimeout(placeNodes, 300); // after layout
+
+/* ========== Questions & logic ========== */
+const questions = [
+  {q:"Why you are so beautiful?", a1:"Because I smile", a2:"Because of you"},
+  {q:"Apki aawaaz mujhe maar degi kisi din, gaogi 'Janemann' kya?", a1:"Yes", a2:"No"},
+  {q:"Agar mai poochu: Momos ya Mujhe — kisko chunogi?", a1:"Momos", a2:"Mujhe"},
+  {q:"I know you are cute — kya tum meri beti banogi ache wali?", a1:"Yes", a2:"No"}
+];
+let answeredCount = 0;
+const modal = document.getElementById('modal');
+const qtxt = document.getElementById('qtxt');
+const optA = document.getElementById('optA');
+const optB = document.getElementById('optB');
+
+function showModalForQuestion(idx){
+  qtxt.textContent = questions[idx].q;
+  optA.textContent = questions[idx].a1;
+  optB.textContent = questions[idx].a2;
+  modal.style.display = 'block';
+  // reset special classes
+  optA.classList.remove('dodge'); optB.classList.remove('dodge');
+  // special for question 3 (index 2): make Momos option dodge if chosen
+  if(idx === 2){
+    // make option A = Momos dodge behavior
+    optA.onclick = ()=> {
+      // animate dodge -> move position randomly
+      dodgeButton(optA);
+      showTinyToast("Momos naughty! Try choosing the other one 😜");
+    };
+    optB.onclick = ()=> {
+      // choose 'Mujhe' => accept and proceed
+      modal.style.display = 'none';
+      answeredCount++;
+      heartBurst(8);
+      checkFinal();
+    };
+  } else if(idx === 0 || idx === 1){
+    optA.onclick = ()=> { modal.style.display='none'; answeredCount++; heartBurst(6); checkFinal(); };
+    optB.onclick = ()=> { modal.style.display='none'; answeredCount++; heartBurst(6); checkFinal(); };
+  } else if(idx === 3){
+    // final yes/no logic
+    optA.onclick = ()=> { // Yes chosen
+      modal.style.display='none';
+      answeredCount++;
+      heartBurst(12);
+      triggerFinalReveal(true);
+    };
+    optB.onclick = ()=> { // No chosen
+      modal.style.display='none';
+      showTinyToast("Katti hu tumse ab me 😤");
+      // show brief broken-heart animation
+      showBrokenHeart();
+    };
+  }
+}
+
+/* dodge button playful effect */
+function dodgeButton(btn){
+  btn.style.transition = 'transform .12s ease, left .18s ease, top .18s ease';
+  btn.classList.add('dodge');
+  const r = 60 + Math.random()*120;
+  const ang = Math.random() * Math.PI * 2;
+  btn.style.transform = `translate(${Math.cos(ang)*r}px, ${Math.sin(ang)*r}px)`;
+  setTimeout(()=> {
+    btn.style.transform = '';
+    btn.classList.remove('dodge');
+  }, 540);
+}
+
+/* heart burst */
+function heartBurst(n){
+  for(let i=0;i<n;i++){
     const el = document.createElement('div');
     el.className = 'fheart';
     el.innerText = '❤️';
-    const size = Math.random()*14 + 16;
+    const size = 14 + Math.random()*32;
     el.style.fontSize = size + 'px';
-    el.style.left = Math.random()*100 + 'vw';
-    el.style.top = '-10vh';
-    el.style.opacity = Math.random()*0.9 + 0.3;
-    el.style.transform = 'rotate(' + (Math.random()*60-30) + 'deg)';
-    el.style.transition = 'transform linear '+(4+Math.random()*5)+'s, top linear '+(4+Math.random()*5)+'s, opacity linear '+(4+Math.random()*5)+'s';
-    wrap.appendChild(el);
+    el.style.left = (50 + (Math.random()*160-80)) + 'vw';
+    el.style.top = (40 + Math.random()*30) + 'vh';
+    el.style.opacity = 1;
+    el.style.transition = `transform ${900+Math.random()*600}ms cubic-bezier(.2,.9,.2,1), opacity 900ms linear`;
+    document.getElementById('fallingLayer').appendChild(el);
     requestAnimationFrame(()=> {
-      el.style.top = '110vh';
-      el.style.transform = 'translateY(0) rotate(' + (Math.random()*120-60) + 'deg)';
+      el.style.transform = `translateY(${200 + Math.random()*260}px) translateX(${Math.random()*140-70}px) scale(${0.6+Math.random()*0.9}) rotate(${Math.random()*160-80}deg)`;
       el.style.opacity = 0;
     });
-    setTimeout(()=> el.remove(), 9500);
-  }
-  setInterval(spawn, 700);
-})();
-
-/* ---------- build 4 heart nodes and animation ---------- */
-const nodeConfig = [
-  {id:'n1', x:225, y:115},
-  {id:'n2', x:150, y:170},
-  {id:'n3', x:285, y:200},
-  {id:'n4', x:200, y:245}
-];
-const nodeContainer = document.getElementById('nodeContainer');
-nodeConfig.forEach((n,i)=>{
-  const btn = document.createElement('div');
-  btn.className = 'node-heart';
-  btn.dataset.idx = i;
-  btn.style.position = 'absolute';
-  // position relative to svg viewBox 420x520 -> scale to container
-  btn.style.left = (n.x/420*100)+'%';
-  btn.style.top = (n.y/520*100)+'%';
-  btn.style.pointerEvents = 'auto';
-  btn.style.transform = 'translate(-50%,-50%)';
-  btn.innerHTML = '❤️';
-  btn.style.filter = 'drop-shadow(0 8px 12px rgba(255,20,100,0.12))';
-  nodeContainer.appendChild(btn);
-});
-
-/* ---------- tree draw sequence (play trunk animation then show nodes pulse) ---------- */
-const trunkPaths = document.querySelectorAll('.path-anim');
-setTimeout(()=> trunkPaths.forEach(p => p.style.animationDelay = '0.2s'), 100);
-
-/* ---------- UI flow & Q logic ---------- */
-const startBtn = document.getElementById('startBtn');
-const audio = document.getElementById('audio');
-const nodes = document.querySelectorAll('.node-heart');
-const modal = document.getElementById('modal');
-const burn = document.getElementById('burn');
-const revealArea = document.getElementById('revealArea');
-const bigPic = document.getElementById('bigPic');
-const sidePics = document.getElementById('sidePics');
-const side1 = document.getElementById('side1');
-const side2 = document.getElementById('side2');
-const finalLine = document.getElementById('finalLine');
-
-let askedCount = 0;      // which question index (0..3)
-let answered = [];       // store answers
-let currentNode = null;  // which node triggered the modal
-let momosChosen = false; // special behavior
-let finalUnlocked = false;
-
-/* Questions array (matching user's requested styles) */
-const questions = [
-  {q:"Why are you so beautiful?", a1:"Because I smile", a2:"Because of you"},
-  {q:"Will you sing 'Janemann' for me someday?", a1:"Yes", a2:"No"},
-  {q:"Who will you choose — momos or me?", a1:"Momos", a2:"You"},
-  {q:"I know you're cute — will you be my bestie?", a1:"Yes", a2:"No"}
-];
-
-/* Show modal helper */
-function showModal(nodeIdx){
-  currentNode = nodeIdx;
-  const item = questions[Math.min(askedCount, questions.length-1)];
-  modal.innerHTML = `
-    <div class="modal" role="dialog" aria-modal="true">
-      <div class="qtxt">${escapeHtml(item.q)}</div>
-      <div class="opts">
-        <div class="opt opt1">${escapeHtml(item.a1)}</div>
-        <div class="opt opt2 primary">${escapeHtml(item.a2)}</div>
-      </div>
-    </div>
-  `;
-  modal.style.display = 'block';
-
-  // wire up options
-  const opt1 = modal.querySelector('.opt1');
-  const opt2 = modal.querySelector('.opt2');
-
-  // special handling for question 3 (momos)
-  if(askedCount === 2){
-    // if chooses momos -> playful disabled effect
-    opt1.addEventListener('click', ()=> {
-      // mark momos chosen: animate shake and keep modal open (user must choose other to proceed)
-      opt1.classList.add('disabled');
-      momosChosen = true;
-      setTimeout(()=> opt1.classList.remove('disabled'), 800);
-      // small message pop
-      showToast("Momos eh? Nice choice... but try the other option too 😉");
-    }, {once:true});
-    opt2.addEventListener('click', ()=> {
-      // choose 'You' -> proceed normally
-      answered.push({q:item.q, ans:item.a2});
-      closeModal();
-      advanceFlow();
-    }, {once:true});
-    return;
-  }
-
-  // normal handling for other questions
-  opt1.addEventListener('click', ()=> {
-    answered.push({q:item.q, ans:item.a1});
-    closeModal();
-    advanceFlow();
-  }, {once:true});
-  opt2.addEventListener('click', ()=> {
-    answered.push({q:item.q, ans:item.a2});
-    closeModal();
-    advanceFlow();
-  }, {once:true});
-}
-
-function closeModal(){ modal.style.display='none'; }
-
-/* When a node is clicked show its question (one-time mapping order) */
-nodes.forEach(node => {
-  node.addEventListener('click', (ev)=>{
-    // if this node was already used to ask, ignore
-    const idx = parseInt(node.dataset.idx,10);
-    // show modal for current question index
-    // allow clicking only if askedCount < questions.length and not finalUnlocked
-    if(finalUnlocked) return;
-    if(askedCount >= questions.length) return;
-    showModal(idx);
-    // small pop visual on node
-    node.animate([{transform:'scale(1.2)'},{transform:'scale(1)'}],{duration:260,easing:'ease-out'});
-  });
-});
-
-/* Advance after successfully answering one question */
-function advanceFlow(){
-  askedCount++;
-  showToast("Nice answer 😉");
-  // create falling hearts burst when an answer is given
-  heartBurst(6);
-
-  if(askedCount >= questions.length){
-    // All done — unlock final sequence: burning heart then reveal
-    finalUnlocked = true;
-    setTimeout(()=> runFinalReveal(), 900);
+    setTimeout(()=> el.remove(), 2000);
   }
 }
 
-/* Play button behavior - show tree nodes visually (pulse) */
-startBtn.addEventListener('click', ()=>{
-  // allow one click to enable audio play later; start trunk animation already running; just hide button
-  startBtn.style.display = 'none';
-  // show subtle node indicator (pointer events already enabled)
-  document.querySelectorAll('.node-heart').forEach(n=>{
-    n.style.opacity = 1;
-    n.style.pointerEvents = 'auto';
-    n.style.transition = 'transform .6s ease';
-    // small entrance animation
-    n.animate([{transform:'translateY(-12px) scale(.8)', opacity:0},{transform:'translateY(0) scale(1)', opacity:1}],{duration:700,delay:120});
-  });
-  // small hint
-  showToast("Tap any heart on the tree to answer a question");
-});
-
-/* Burning animation + reveal final picture */
-function runFinalReveal(){
-  // show burning heart overlay (2.2s)
-  burn.style.display = 'flex';
-  setTimeout(()=> {
-    burn.style.display = 'none';
-    // show reveal content
-    revealArea.style.display = 'block';
-    // animate big picture in
-    bigPic.style.opacity = 1;
-    bigPic.style.transform = 'scale(1)';
-    bigPic.animate([{transform:'scale(.9)', opacity:0},{transform:'scale(1)', opacity:1}],{duration:650, easing:'cubic-bezier(.2,.8,.2,1)'});
-    // short delay then allow click to expand to side pics and start song
-    setTimeout(()=> {
-      bigPic.addEventListener('click', showSidePics, {once:true});
-      // also autoplay the audio here (user has interacted heavily by now)
-      try{ audio.currentTime = 0; audio.play().catch(()=>{}); }catch(e){}
-    },600);
-  },2200);
-}
-
-/* Show the two images side-by-side with animation & reveal final line */
-function showSidePics(){
-  sidePics.style.opacity = 1;
-  sidePics.style.transform = 'translateY(0)';
-  // animate each side pic
-  side1.style.opacity = 1; side1.style.transform = 'translateY(0)';
-  side2.style.opacity = 1; side2.style.transform = 'translateY(0)';
-  // show final love line
-  setTimeout(()=> {
-    finalLine.style.display = 'block';
-    finalLine.animate([{opacity:0, transform:'translateY(12px)'},{opacity:1, transform:'translateY(0)'}],{duration:500});
-  },420);
-}
-
-/* small heart burst function */
-function heartBurst(n){
-  const container = document.getElementById('fallLarge');
-  for(let i=0;i<n;i++){
-    const el = document.createElement('div');
-    el.style.position='absolute';
-    el.style.left = (50 + (Math.random()*120-60)) + 'px';
-    el.style.top = (150 + Math.random()*90-40) + 'px';
-    el.innerText='❤️';
-    el.style.fontSize = (12 + Math.random()*18) + 'px';
-    el.style.opacity = 1;
-    el.style.transition = 'all 1200ms cubic-bezier(.2,.8,.2,1)';
-    container.appendChild(el);
-    setTimeout(()=> {
-      el.style.top = (Math.random()*380 + 220) + 'px';
-      el.style.transform = 'translateY(120px) rotate(' + (Math.random()*180-90) + 'deg) scale(.6)';
-      el.style.opacity = 0;
-    },10);
-    setTimeout(()=> el.remove(), 1400);
-  }
-}
-
-/* small toast */
-function showToast(msg){
+/* tiny toast messages */
+function showTinyToast(txt){
   const t = document.createElement('div');
-  t.textContent = msg;
-  t.style.position='fixed'; t.style.bottom='26px'; t.style.left='50%'; t.style.transform='translateX(-50%)';
-  t.style.padding='10px 14px'; t.style.borderRadius='10px'; t.style.background='linear-gradient(90deg, rgba(255,77,109,0.95), rgba(255,122,136,0.95))';
-  t.style.color='white'; t.style.zIndex=90; t.style.boxShadow='0 8px 30px rgba(0,0,0,0.4)';
+  t.textContent = txt;
+  t.style.position='fixed'; t.style.left='50%'; t.style.bottom='8%'; t.style.transform='translateX(-50%)';
+  t.style.background='linear-gradient(90deg,var(--accent),#ff8aa0)'; t.style.padding='8px 12px'; t.style.borderRadius='12px'; t.style.zIndex=90; t.style.boxShadow='0 10px 30px rgba(0,0,0,0.5)';
   document.body.appendChild(t);
-  t.animate([{opacity:0, transform:'translateY(6px)'},{opacity:1, transform:'translateY(0)'}],{duration:240});
-  setTimeout(()=> {
-    t.animate([{opacity:1},{opacity:0, transform:'translateY(10px)'}],{duration:380});
-    setTimeout(()=> t.remove(),380);
-  },1800);
+  setTimeout(()=> { t.style.transition='opacity .5s'; t.style.opacity=0; setTimeout(()=> t.remove(),600)},1600);
 }
 
-/* escape helper to safely insert text */
-function escapeHtml(s){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+/* broken heart */
+function showBrokenHeart(){
+  const el = document.createElement('div');
+  el.textContent = '💔';
+  el.style.position='fixed'; el.style.left='50%'; el.style.top='20%'; el.style.transform='translateX(-50%)'; el.style.fontSize='72px'; el.style.zIndex=90;
+  document.body.appendChild(el);
+  setTimeout(()=> el.remove(),1800);
+}
 
-/* Accessibility: if audio refused, show small hint to press play */
-audio.addEventListener('play', ()=> console.log('audio started'));
-audio.addEventListener('error', ()=> console.warn('audio load failed'));
+/* ========== node click handler ========== */
+function onNodeClick(index, element){
+  // disable pointer until modal closed
+  element.style.pointerEvents = 'none';
+  // ask the question corresponding to index order (we ensure order by tracking answeredCount)
+  const qIndex = answeredCount; // show sequentially
+  if(qIndex >= questions.length) return;
+  showModalForQuestion(qIndex);
+}
 
-/* Prevent accidental drag on pics */
-[bigPic, side1, side2].forEach(img => img && (img.ondragstart = ()=> false));
-
-/* small UX: clicking outside modal closes it (only if not in momos special) */
-document.addEventListener('click', (e)=>{
-  if(modal.style.display === 'block'){
-    const mod = modal.querySelector('.modal');
-    if(mod && !mod.contains(e.target)) { /* leave open - require explicit pick */ }
+/* check after each answer if need to continue or finish */
+function checkFinal(){
+  if(answeredCount >= questions.length - 1){
+    // last question remains; but this function is called after intermediate Qs
+    // we simply let user click next heart and trigger final flow
+    // small hint
+    showTinyToast("Almost there... click the last heart!");
   }
+}
+
+/* final reveal: burning animation then reveal panel */
+const burnOverlay = document.getElementById('burnOverlay');
+const reveal = document.getElementById('reveal');
+function triggerFinalReveal(ok){
+  if(!ok) return;
+  burnOverlay.style.display = 'flex';
+  setTimeout(()=> {
+    burnOverlay.style.display = 'none';
+    reveal.style.display = 'flex';
+    // animate reveal elements
+    const big = document.querySelector('.big');
+    big.style.transform = 'scale(.92)';
+    setTimeout(()=> big.style.transform = 'scale(1)', 60);
+    // float some I❤️U bubbles
+    spawnFloaters();
+    try { audio.currentTime = 0; audio.play().catch(()=>{}); } catch(e){}
+  }, 2200);
+}
+
+/* floaters (I ❤️ U) */
+const floaters = document.getElementById('floaters');
+function spawnFloaters(){
+  for(let i=0;i<10;i++){
+    const f = document.createElement('div');
+    f.className = 'floater';
+    f.style.left = (10 + Math.random()*80) + 'vw';
+    f.style.bottom = (5 + Math.random()*40) + 'vh';
+    f.style.fontSize = (12 + Math.random()*28) + 'px';
+    f.textContent = 'I ❤️ U';
+    floaters.appendChild(f);
+    const dur = 6000 + Math.random()*6000;
+    f.style.animationDuration = dur + 'ms';
+    setTimeout(()=> f.remove(), dur+200);
+  }
+}
+
+/* ========== Start button wiring & hint to click heart nodes only after tree drawn ========== */
+document.getElementById('playBtn').addEventListener('click', ()=>{
+  try{ audio.play().catch(()=>{}); }catch(e){}
+  // show hint toast
+  showTinyToast("Tap a heart on the tree to answer!");
 });
+
+// ensure nodes are active only once drawing finished (draw animation length ~2.6s)
+setTimeout(()=> {
+  // nodes place again (just in case)
+  placeNodes();
+  // enable nodes (they already added click handlers)
+}, 2800);
+
+/* ========== small accessibility: clicking outside modal does nothing (force pick) ========== */
+/* Hide modal when not used by flow - we rely on explicit picks so not auto-close */
+
+/* ========== final: create nodes initially (in case placeNodes not yet run) ========== */
+setTimeout(()=> {
+  placeNodes();
+  // add gentle pulse and hint
+  document.querySelectorAll('.node').forEach((n, i)=>{
+    setTimeout(()=> n.classList.add('pulse'), 600 + i*120);
+  });
+}, 600);
+
+/* ========== initial tiny star twinkle and first spawn ========== */
+setTimeout(()=> spawnFloatingHeart(), 1000);
+
 </script>
 </body>
 </html>
