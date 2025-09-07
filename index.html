@@ -228,6 +228,7 @@
       inset 0 0 12px #fddede;
     text-align: center;
     user-select: none;
+    position: relative;
   }
 
   .modal h2 {
@@ -312,7 +313,117 @@
     margin-top: 20px;
   }
 
-  /* Responsive */
+  /* ----- FINAL IMAGE SELECTION LAYER ----- */
+  .final-step {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right:0;
+    bottom: 0;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 30;
+    flex-direction: column;
+    padding: 20px;
+  }
+  .final-step.active {
+    display: flex;
+  }
+  .final-images {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 15px;
+  }
+  .final-images img {
+    width: 140px;
+    height: 140px;
+    border-radius: 15px;
+    border: 4px solid transparent;
+    box-shadow: 0 0 10px #e63946;
+    cursor: pointer;
+    transition: border-color 0.5s ease, box-shadow 0.5s ease, transform 0.3s ease;
+  }
+  .final-images img.glow {
+    border-color: #e63946;
+    box-shadow:
+      0 0 20px 6px #e63946aa,
+      0 0 40px 12px #e6394622;
+    transform: scale(1.08);
+  }
+  .final-text {
+    color: #fafafa;
+    font-size: 1.3rem;
+    font-weight: 700;
+    text-shadow: 0 2px 6px #730022;
+  }
+
+  /* ----- SECOND IMAGE CHOICE ----- */
+  .second-step {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right:0;
+    bottom: 0;
+    background: rgba(0,0,0,0.75);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 40;
+    flex-direction: column;
+    padding: 20px;
+  }
+  .second-step.active {
+    display: flex;
+  }
+  .second-images {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 25px;
+  }
+  .second-images .img-container {
+    cursor: pointer;
+    text-align: center;
+    user-select: none;
+  }
+  .second-images img {
+    width: 140px;
+    height: 140px;
+    border-radius: 30px;
+    border: 4px solid #e63946;
+    box-shadow:
+      0 0 12px #e63946bb;
+    transition:
+      box-shadow 0.3s ease,
+      transform 0.2s ease;
+    display: block;
+    margin-bottom: 8px;
+  }
+  .second-images .img-container:hover img {
+    box-shadow:
+      0 0 30px 4px #e63946ee;
+    transform: scale(1.08);
+  }
+  .img-label {
+    font-weight: 700;
+    color: #fab1a0;
+    font-size: 1rem;
+    letter-spacing: 0.05em;
+  }
+
+  /* Animation for celebration */
+  @keyframes celebrateScale {
+    0% { transform: scale(1) rotate(0deg); }
+    30% { transform: scale(1.2) rotate(15deg); }
+    60% { transform: scale(1.1) rotate(-10deg); }
+    100% { transform: scale(1) rotate(0deg);}
+  }
+  .celebrate {
+    animation: celebrateScale 0.7s ease forwards;
+  }
+
+  /* Responsive adjustments */
   @media (max-width: 440px) {
     .tree {
       width: 160px;
@@ -336,6 +447,11 @@
     .falling-hearts {
       width: 160px;
       height: 230px;
+    }
+    .final-images img,
+    .second-images img {
+      width: 110px;
+      height: 110px;
     }
   }
 </style>
@@ -375,6 +491,32 @@
   </div>
 </div>
 
+<!-- Final image selection step -->
+<div class="final-step" aria-label="Final beautiful images selection" role="dialog" aria-modal="true" aria-live="polite" tabindex="-1">
+  <div class="final-images">
+    <img src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=140&q=80" alt="Beautiful Picture 1" tabindex="0" />
+    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=140&q=80" alt="Beautiful Picture 2" tabindex="0" />
+  </div>
+  <div class="final-text">You are very beautiful, my qtu bestu ❤️</div>
+</div>
+
+<!-- Second image choice step -->
+<div class="second-step" aria-label="Second image choice" role="dialog" aria-modal="true" aria-live="polite" tabindex="-1">
+  <div class="second-images">
+    <div class="img-container" tabindex="0" role="button" aria-pressed="false" aria-label="Picture 1">
+      <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=140&q=80" alt="Pic 1" />
+      <div class="img-label">Pic 1</div>
+    </div>
+    <div class="img-container" tabindex="0" role="button" aria-pressed="false" aria-label="Picture 2">
+      <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=140&q=80" alt="Pic 2" />
+      <div class="img-label">Pic 2</div>
+    </div>
+  </div>
+</div>
+
+<!-- Audio element -->
+<audio id="bg-music" src="song.mp3" preload="auto"></audio>
+
 <script>
   (() => {
     const overlay = document.querySelector('.overlay');
@@ -382,10 +524,33 @@
     const questionTitle = overlay.querySelector('#question-title');
     const btnGroup = overlay.querySelector('.btn-group');
     const successMsg = overlay.querySelector('.success-msg');
+    const finalStep = document.querySelector('.final-step');
+    const finalImages = finalStep.querySelectorAll('img');
+    const finalText = finalStep.querySelector('.final-text');
+    const secondStep = document.querySelector('.second-step');
+    const secondImages = secondStep.querySelectorAll('.img-container');
+    const hearts = Array.from(document.querySelectorAll('.falling-hearts .heart'));
+    const audio = document.getElementById('bg-music');
 
-    // Questions + Answers config:
-    // answers is array of objects { text, correct:boolean, id:string }
-    // id used for logic for sliding buttons on incorrect clicks
+    // Play music after user interaction or with autoplay (browser policies)
+    function tryPlayAudio() {
+      const p = audio.play();
+      if (p !== undefined) {
+        p.catch(() => {
+          // Autoplay blocked, wait for user interaction
+          const startAudioOnInteraction = () => {
+            audio.play();
+            window.removeEventListener('click', startAudioOnInteraction);
+            window.removeEventListener('keydown', startAudioOnInteraction);
+          };
+          window.addEventListener('click', startAudioOnInteraction);
+          window.addEventListener('keydown', startAudioOnInteraction);
+        });
+      }
+    }
+    tryPlayAudio();
+
+    // Questions configuration
     const questions = [
       {
         id: "q1",
@@ -416,28 +581,20 @@
       }
     ];
 
-    // State tracking
     let currentQuestionIndex = -1;
-    let noButtonSliding = false;
+    let currentQuestion;
 
-    // To get an accessible focus trap, when modal opens we focus on first button
-    // handle buttons slide logic
     function createButton(answer) {
       const btn = document.createElement('button');
       btn.textContent = answer.text;
       btn.type = 'button';
       btn.dataset.id = answer.id;
       btn.dataset.correct = answer.correct;
-
-      // Add accessible features
       btn.setAttribute('aria-pressed', 'false');
 
-      // Sliding only applies for incorrect answers (No or wrong choices)
-      // We'll attach a mouseenter/touchstart event to slide it away if user tries to click no
       if (!answer.correct) {
-        // On mouseenter and touchstart slide button and disable click for 700ms
+        // Slide away on mouseenter, touchstart, focus to prevent clicking no/wrong answers
         let sliding = false;
-
         function slideButton() {
           if (sliding) return;
           sliding = true;
@@ -452,33 +609,24 @@
         btn.addEventListener('focus', slideButton);
       }
 
-      btn.addEventListener('click', (e) => {
+      btn.addEventListener('click', e => {
         e.preventDefault();
         if (btn.disabled) return;
 
         if (btn.dataset.correct === "true") {
-          // Correct answer clicked
           successMsg.textContent = '';
           for (let b of btnGroup.children) b.disabled = true;
           btnGroup.style.pointerEvents = 'none';
+          // Animate modal as celebration
+          modal.classList.add('celebrate');
 
           // Show success text
           successMsg.textContent = currentQuestion.successText;
 
-          // After 2 seconds, go to next question or finish
-          setTimeout(() => {
-            currentQuestionIndex++;
-            if (currentQuestionIndex < questions.length) {
-              renderQuestion(currentQuestionIndex);
-            } else {
-              // Finished all questions; close modal
-              closeModal();
-              alert("Thank you for playing! ❤️");
-            }
-          }, 2000);
+          // After celebration animation end (~ 700ms) start next or final step
+          modal.addEventListener('animationend', onCelebrateEnd, {once:true});
         } else {
-          // Incorrect answer clicked - (shouldn't be possible by sliding, but just in case)
-          // Animate no btn quickly and disable clicking for 1.2s
+          // Defensive fallback if clicked no (should be prevented)
           btn.disabled = true;
           btn.classList.add('slide-right');
           setTimeout(() => {
@@ -491,23 +639,30 @@
       return btn;
     }
 
+    function onCelebrateEnd() {
+      modal.classList.remove('celebrate');
+      currentQuestionIndex++;
+      if (currentQuestionIndex < questions.length) {
+        renderQuestion(currentQuestionIndex);
+      } else {
+        // All questions done: close question modal, open final images step
+        closeModal();
+        openFinalStep();
+      }
+    }
+
     function renderQuestion(index) {
       currentQuestion = questions[index];
       questionTitle.textContent = currentQuestion.text;
       successMsg.textContent = '';
       btnGroup.innerHTML = '';
       btnGroup.style.pointerEvents = 'auto';
-
       for (const answer of currentQuestion.answers) {
         const btn = createButton(answer);
         btnGroup.appendChild(btn);
       }
-
-      // Focus first button on question show for accessibility
       setTimeout(() => {
-        if (btnGroup.firstElementChild) {
-          btnGroup.firstElementChild.focus();
-        }
+        if (btnGroup.firstElementChild) btnGroup.firstElementChild.focus();
       }, 100);
     }
 
@@ -516,51 +671,143 @@
       renderQuestion(currentQuestionIndex);
       overlay.classList.add('active');
       modal.focus();
-      // Stop heart fall animations during modal open for clarity
-      hearts.forEach(h => {
-        h.style.animationPlayState = 'paused';
-      });
+      // Pause heart animations
+      hearts.forEach(h => h.style.animationPlayState = 'paused');
     }
     function closeModal() {
       overlay.classList.remove('active');
       successMsg.textContent = '';
       btnGroup.innerHTML = '';
-      // Resume heart animations
+      hearts.forEach(h => h.style.animationPlayState = '');
+    }
+
+    // Final step logic
+    function openFinalStep() {
+      finalStep.classList.add('active');
+      finalStep.setAttribute('tabindex','0');
+      finalStep.focus();
+      // Highlight both images with glowing border
+      finalImages.forEach(img => {
+        img.classList.add('glow');
+      });
+      // Disable clicking hearts
       hearts.forEach(h => {
-        h.style.animationPlayState = '';
+        h.style.pointerEvents = 'none';
       });
     }
+    // Close final step to open second step with images pic1/pic2
+    function openSecondStep() {
+      finalStep.classList.remove('active');
+      secondStep.classList.add('active');
+      secondStep.setAttribute('tabindex','0');
+      secondStep.focus();
+      // Remove glow from final images
+      finalImages.forEach(img => img.classList.remove('glow'));
+    }
+    // Close second step and end flow
+    function closeSecondStep() {
+      secondStep.classList.remove('active');
+      // Optionally allow hearts again (or keep disabled)
+      // hearts.forEach(h => {
+      //   h.style.pointerEvents = 'auto';
+      // });
+      alert("Thank you for playing! ❤️");
+    }
+
+    // Click handlers for final images - show alert or just proceed to second step
+    finalImages.forEach(img => {
+      img.addEventListener('click', () => {
+        // Animate clicked image bigger and glowing stronger
+        finalImages.forEach(i => i.classList.remove('glow'));
+        img.classList.add('glow');
+        img.style.transition = "transform 0.3s ease";
+        img.style.transform = "scale(1.15)";
+        // Show line is already displayed
+        setTimeout(() => {
+          openSecondStep();
+          // Reset transform for final images (to avoid weird residual transforms)
+          finalImages.forEach(i => {
+            i.style.transform = "";
+            i.style.transition = "";
+          });
+        }, 800);
+      });
+      img.addEventListener('keydown', e => {
+        if(e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          img.click();
+        }
+      });
+    });
+
+    // Click handlers for second step images
+    secondImages.forEach(cont => {
+      cont.addEventListener('click', () => {
+        // Animate selected image
+        secondImages.forEach(c => {
+          c.querySelector('img').style.filter = "grayscale(100%)";
+          c.setAttribute('aria-pressed', 'false');
+        });
+        cont.querySelector('img').style.filter = "none";
+        cont.setAttribute('aria-pressed', 'true');
+
+        // After short delay, close second step with message
+        setTimeout(() => {
+          closeSecondStep();
+        }, 1000);
+      });
+      cont.addEventListener('keydown', e => {
+        if(e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          cont.click();
+        }
+      });
+    });
 
     // Accessibility: close modal with ESC key
     overlay.addEventListener('keydown', e => {
-      if (e.key === 'Escape') {
-        closeModal();
+      if (e.key === 'Escape') closeModal();
+    });
+    finalStep.addEventListener('keydown', e =>{
+      if(e.key === 'Escape') {
+        finalStep.classList.remove('active');
+        hearts.forEach(h => h.style.pointerEvents = 'auto');
+      }
+    });
+    secondStep.addEventListener('keydown', e =>{
+      if(e.key === 'Escape') {
+        secondStep.classList.remove('active');
+        hearts.forEach(h => h.style.pointerEvents = 'auto');
       }
     });
 
-    // Add click on falling hearts to open modal
-    const hearts = Array.from(document.querySelectorAll('.falling-hearts .heart'));
-
-    hearts.forEach((heart) => {
-      heart.addEventListener('click', () => {
-        openModal();
-      });
-      heart.addEventListener('keydown', (e) => {
-        if (e.key === "Enter" || e.key=== " " ) {
+    // Open questions on heart click or keyboard enter/space
+    hearts.forEach(heart => {
+      heart.addEventListener('click', openModal);
+      heart.addEventListener('keydown', e => {
+        if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           openModal();
         }
       });
     });
 
-    // Trap focus inside modal when open for accessibility - basic trap
-    document.addEventListener('focus', (e) => {
-      if (!overlay.classList.contains('active')) return;
-      if (!overlay.contains(e.target)) {
+    // Focus trap inside modals (basic)
+    document.addEventListener('focus', e => {
+      if (overlay.classList.contains('active') && !overlay.contains(e.target)) {
         e.stopPropagation();
         modal.focus();
       }
+      if (finalStep.classList.contains('active') && !finalStep.contains(e.target)) {
+        e.stopPropagation();
+        finalStep.focus();
+      }
+      if (secondStep.classList.contains('active') && !secondStep.contains(e.target)) {
+        e.stopPropagation();
+        secondStep.focus();
+      }
     }, true);
+
   })();
 </script>
 
