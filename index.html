@@ -1,774 +1,568 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Romantic Surprise ❤️</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Bestie Love Tree Animation & Questions</title>
+<style>
+  /* ---------- TREE AND HEART ANIMATION ---------- */
+  body {
+    background: linear-gradient(135deg, #fceeeb 0%, #a6e3e9 100%);
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    align-items: center;
+    padding: 20px;
+    overflow-x: hidden;
+  }
 
-        body {
-            font-family: 'Arial', sans-serif;
-            overflow-x: hidden;
-            background: linear-gradient(135deg, #0c0c1e 0%, #1a1a2e 50%, #16213e 100%);
-            min-height: 100vh;
-            position: relative;
-        }
+  h1 {
+    margin-bottom: 10px;
+    color: #d90429;
+    text-shadow: 1px 1px 3px #810032;
+  }
 
-        /* Stars Animation */
-        .stars {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
+  .tree {
+    position: relative;
+    width: 220px;
+    height: 340px;
+    margin: 30px auto 60px;
+    background: linear-gradient(to top, #5d3a00 0%, #a67c00 60%, transparent 60%);
+    border-radius: 0 0 50px 50px;
+    box-shadow:
+      inset 0 -20px 18px #4b2e00,
+      0 2px 5px rgba(0,0,0,0.2);
+  }
+  /* trunk */
+  .trunk {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 48px;
+    height: 130px;
+    margin-left: -24px;
+    background: linear-gradient(180deg, #4b2e00 0%, #311b00 100%);
+    border-radius: 24px 24px 10px 10px;
+    box-shadow: inset 0 2px 5px rgba(255,255,255,0.3);
+    z-index: 5;
+  }
 
-        .star {
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-            animation: twinkle 2s infinite alternate;
-        }
+  /* branches */
+  .branch {
+    position: absolute;
+    background: linear-gradient(90deg, #4b2e00 0%, #311b00 100%);
+    border-radius: 10px;
+    box-shadow: 0 0 4px #3b2700 inset;
+  }
+  .branch1 {
+    bottom: 130px;
+    left: 50%;
+    width: 140px;
+    height: 24px;
+    margin-left: -113px;
+    transform: rotate(-27deg);
+    transform-origin: right center;
+    z-index: 4;
+  }
+  .branch2 {
+    bottom: 130px;
+    left: 50%;
+    width: 140px;
+    height: 24px;
+    margin-left: 23px;
+    transform: rotate(27deg);
+    transform-origin: left center;
+    z-index: 4;
+  }
 
-        @keyframes twinkle {
-            0% { opacity: 0.3; transform: scale(1); }
-            100% { opacity: 1; transform: scale(1.2); }
-        }
+  /* Heart shape foundation */
+  .heart {
+    position: absolute;
+    width: 24px;
+    height: 21px;
+    background: #e63946;
+    transform: rotate(-45deg);
+    cursor: pointer;
+    will-change: transform, opacity;
+    user-select: none;
+    box-shadow:
+      0 2px 6px rgba(230, 57, 70, 0.5),
+      inset 0 0 6px #f06d78;
+    transition: filter 0.3s ease;
+  }
+  .heart:hover {
+    filter: drop-shadow(0 0 6px #ff718d);
+  }
+  .heart::before,
+  .heart::after {
+    content: "";
+    position: absolute;
+    width: 24px;
+    height: 21px;
+    background: #e63946;
+    border-radius: 50%;
+    box-shadow: inset 0 0 8px #f06d78;
+  }
+  .heart::before {
+    top: -13px;
+    left: 0;
+  }
+  .heart::after {
+    top: 0;
+    left: 14px;
+  }
 
-        /* Heart Particles */
-        .heart-particle {
-            position: fixed;
-            color: #ff69b4;
-            font-size: 12px;
-            animation: fall 8s linear infinite;
-            pointer-events: none;
-            z-index: 2;
-        }
+  /* Static hearts as leaves */
+  .tree .heart.leaf1 {
+    bottom: 190px;
+    left: 35px;
+    transform: rotate(-45deg);
+    animation: none;
+    cursor: default;
+  }
+  .tree .heart.leaf2 {
+    bottom: 215px;
+    left: 87px;
+    transform: rotate(-45deg);
+    animation: none;
+    cursor: default;
+  }
+  .tree .heart.leaf3 {
+    bottom: 205px;
+    left: 145px;
+    transform: rotate(-45deg);
+    animation: none;
+    cursor: default;
+  }
 
-        @keyframes fall {
-            0% {
-                transform: translateY(-100vh) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(100vh) rotate(360deg);
-                opacity: 0;
-            }
-        }
+  /* Falling hearts container */
+  .falling-hearts {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 220px;
+    height: 320px;
+    pointer-events: none;
+    overflow: visible;
+    z-index: 6;
+  }
 
-        /* Main Container */
-        .container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            position: relative;
-            z-index: 3;
-            padding: 20px;
-        }
+  /* Falling hearts animation */
+  @keyframes fallHeart {
+    0% {
+      opacity: 1;
+      transform: translateY(0) rotate(-45deg);
+    }
+    80% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(320px) rotate(45deg);
+    }
+  }
 
-        /* Tree */
-        .tree {
-            position: relative;
-            width: 300px;
-            height: 400px;
-        }
+  .falling-hearts .heart {
+    pointer-events: auto;
+    animation-name: fallHeart;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
 
-        .tree-trunk {
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 20px;
-            height: 80px;
-            background: linear-gradient(to bottom, #8B4513, #654321);
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
-        }
+  /* Different random left, delays and durations */
+  .falling-hearts .heart:nth-child(1) {
+    left: 30px;
+    animation-duration: 5300ms;
+    animation-delay: 0ms;
+  }
+  .falling-hearts .heart:nth-child(2) {
+    left: 60px;
+    animation-duration: 4200ms;
+    animation-delay: 1500ms;
+  }
+  .falling-hearts .heart:nth-child(3) {
+    left: 110px;
+    animation-duration: 5800ms;
+    animation-delay: 700ms;
+  }
+  .falling-hearts .heart:nth-child(4) {
+    left: 158px;
+    animation-duration: 5100ms;
+    animation-delay: 2500ms;
+  }
+  .falling-hearts .heart:nth-child(5) {
+    left: 95px;
+    animation-duration: 4600ms;
+    animation-delay: 3200ms;
+  }
 
-        .tree-branches {
-            position: absolute;
-            bottom: 60px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 200px;
-            height: 200px;
-        }
+  /* ---------- QUESTION MODAL ---------- */
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right:0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 20;
+    padding: 20px;
+  }
 
-        .branch {
-            position: absolute;
-            background: linear-gradient(45deg, #fff, #f0f0f0);
-            border-radius: 50px;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
-            animation: sway 3s ease-in-out infinite;
-        }
+  .overlay.active {
+    display: flex;
+  }
 
-        .branch1 {
-            width: 80px;
-            height: 8px;
-            top: 50%;
-            left: 20%;
-            transform: rotate(-30deg);
-        }
+  .modal {
+    background: #fff8f9;
+    max-width: 360px;
+    width: 100%;
+    padding: 25px 30px 30px;
+    border-radius: 15px;
+    box-shadow:
+      0 15px 30px rgba(230, 57, 70, 0.3),
+      inset 0 0 12px #fddede;
+    text-align: center;
+    user-select: none;
+  }
 
-        .branch2 {
-            width: 90px;
-            height: 8px;
-            top: 40%;
-            right: 15%;
-            transform: rotate(25deg);
-        }
+  .modal h2 {
+    color: #d90429;
+    margin-bottom: 20px;
+    font-weight: 700;
+    font-size: 1.6rem;
+  }
 
-        .branch3 {
-            width: 70px;
-            height: 8px;
-            top: 30%;
-            left: 30%;
-            transform: rotate(-45deg);
-        }
+  /* Buttons styles */
+  .btn-group {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: nowrap;
+  }
 
-        .branch4 {
-            width: 85px;
-            height: 8px;
-            top: 20%;
-            right: 25%;
-            transform: rotate(40deg);
-        }
+  button {
+    cursor: pointer;
+    background: #e63946;
+    border: none;
+    color: white;
+    font-weight: 700;
+    padding: 14px 36px;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    box-shadow:
+      0 4px 9px rgba(230, 57, 70, 0.6);
+    transition:
+      background-color 0.3s ease,
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
+    position: relative;
+    user-select: none;
+  }
 
-        .branch5 {
-            width: 60px;
-            height: 8px;
-            top: 10%;
-            left: 45%;
-            transform: rotate(-10deg);
-        }
+  button:focus-visible {
+    outline: 2px solid #e63946aa;
+    outline-offset: 3px;
+  }
 
-        @keyframes sway {
-            0%, 100% { transform: rotate(var(--rotation)) translateX(0); }
-            50% { transform: rotate(var(--rotation)) translateX(3px); }
-        }
+  button:hover:not(:disabled) {
+    background-color: #f44363;
+    box-shadow: 0 8px 15px rgba(244, 67, 99, 0.7);
+  }
 
-        /* Tree Hearts */
-        .tree-heart {
-            position: absolute;
-            color: #ff1493;
-            font-size: 8px;
-            animation: leafSway 2s ease-in-out infinite;
-            text-shadow: 0 0 10px #ff69b4;
-        }
+  /* Disabled style */
+  button:disabled {
+    cursor: not-allowed;
+    background-color: #bbb;
+    box-shadow: none;
+  }
 
-        @keyframes leafSway {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-5px) rotate(5deg); }
-        }
+  /* Slide animation for "no" and wrong options */
+  @keyframes slideRight {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(30px); }
+    50% { transform: translateX(0); }
+    75% { transform: translateX(20px); }
+    100% { transform: translateX(0); }
+  }
+  @keyframes slideLeft {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-30px); }
+    50% { transform: translateX(0); }
+    75% { transform: translateX(-20px); }
+    100% { transform: translateX(0); }
+  }
 
-        /* Clickable Hearts */
-        .clickable-heart {
-            position: absolute;
-            font-size: 30px;
-            color: #ff1493;
-            cursor: pointer;
-            animation: bounce 2s ease-in-out infinite;
-            text-shadow: 0 0 20px #ff69b4;
-            transition: all 0.3s ease;
-            z-index: 10;
-        }
+  .slide-right {
+    animation: slideRight 0.5s ease;
+  }
+  .slide-left {
+    animation: slideLeft 0.5s ease;
+  }
 
-        .clickable-heart:hover {
-            transform: scale(1.2);
-            text-shadow: 0 0 30px #ff69b4;
-        }
+  /* Success message text */
+  .success-msg {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1b4332;
+    margin-top: 20px;
+  }
 
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        /* Modal */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .modal-content {
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            padding: 30px;
-            border-radius: 20px;
-            text-align: center;
-            max-width: 90%;
-            width: 500px;
-            border: 2px solid transparent;
-            background-clip: padding-box;
-            box-shadow: 0 0 30px rgba(255, 105, 180, 0.5);
-            animation: modalSlideIn 0.5s ease;
-        }
-
-        @keyframes modalSlideIn {
-            from { transform: scale(0.5); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        .modal-content::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(45deg, #ff69b4, #ffd700, #ff69b4);
-            border-radius: 20px;
-            z-index: -1;
-            animation: borderGlow 2s linear infinite;
-        }
-
-        @keyframes borderGlow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .question {
-            color: #fff;
-            font-size: 18px;
-            margin-bottom: 30px;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-        }
-
-        .options {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .option-btn {
-            padding: 15px 30px;
-            border: none;
-            border-radius: 25px;
-            background: linear-gradient(45deg, #ff69b4, #ff1493);
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 20px rgba(255, 105, 180, 0.5);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .option-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 25px rgba(255, 105, 180, 0.7);
-        }
-
-        .option-btn.slide-away {
-            animation: slideAway 1s ease forwards;
-            pointer-events: none;
-        }
-
-        @keyframes slideAway {
-            to {
-                transform: translateX(200px);
-                opacity: 0;
-            }
-        }
-
-        /* Final Reveal */
-        .final-reveal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #0c0c1e, #1a1a2e);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            animation: revealFadeIn 1s ease;
-            padding: 20px;
-        }
-
-        @keyframes revealFadeIn {
-            from { opacity: 0; transform: scale(0.8); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .reveal-content {
-            text-align: center;
-            animation: scaleUp 1s ease;
-        }
-
-        @keyframes scaleUp {
-            from { transform: scale(0.5); }
-            to { transform: scale(1); }
-        }
-
-        .image-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 30px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-
-        .main-image, .side-image {
-            border-radius: 20px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .main-image {
-            width: 250px;
-            height: 300px;
-        }
-
-        .side-image {
-            width: 180px;
-            height: 220px;
-        }
-
-        .main-image img, .side-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 15px;
-        }
-
-        .main-image::before, .side-image::before {
-            content: '';
-            position: absolute;
-            top: -5px;
-            left: -5px;
-            right: -5px;
-            bottom: -5px;
-            background: linear-gradient(45deg, #ff69b4, #ffd700, #ff1493, #00ff87, #ff69b4);
-            background-size: 300% 300%;
-            border-radius: 25px;
-            z-index: -1;
-            animation: gradientPulse 3s ease-in-out infinite;
-        }
-
-        @keyframes gradientPulse {
-            0%, 100% {
-                background-position: 0% 50%;
-                filter: blur(0px);
-            }
-            50% {
-                background-position: 100% 50%;
-                filter: blur(2px);
-            }
-        }
-
-        .romantic-text {
-            color: #fff;
-            font-size: 24px;
-            font-weight: bold;
-            text-shadow: 0 0 20px rgba(255, 105, 180, 0.8);
-            animation: textGlow 2s ease-in-out infinite alternate;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        @keyframes textGlow {
-            from { text-shadow: 0 0 20px rgba(255, 105, 180, 0.8); }
-            to { text-shadow: 0 0 30px rgba(255, 105, 180, 1), 0 0 40px rgba(255, 215, 0, 0.5); }
-        }
-
-        .katti-text {
-            color: #ff6b6b;
-            font-size: 28px;
-            font-weight: bold;
-            text-shadow: 0 0 20px rgba(255, 107, 107, 0.8);
-            animation: shake 0.5s ease-in-out infinite;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .tree {
-                width: 250px;
-                height: 350px;
-            }
-
-            .tree-branches {
-                width: 180px;
-                height: 180px;
-            }
-
-            .clickable-heart {
-                font-size: 25px;
-            }
-
-            .modal-content {
-                padding: 20px;
-                width: 90%;
-            }
-
-            .question {
-                font-size: 16px;
-            }
-
-            .option-btn {
-                padding: 12px 25px;
-                font-size: 14px;
-            }
-
-            .main-image {
-                width: 200px;
-                height: 250px;
-            }
-
-            .side-image {
-                width: 150px;
-                height: 180px;
-            }
-
-            .romantic-text {
-                font-size: 18px;
-            }
-
-            .image-container {
-                flex-direction: column;
-                gap: 20px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .tree {
-                width: 200px;
-                height: 300px;
-            }
-
-            .romantic-text {
-                font-size: 16px;
-                padding: 0 10px;
-            }
-
-            .main-image {
-                width: 180px;
-                height: 220px;
-            }
-
-            .side-image {
-                width: 130px;
-                height: 160px;
-            }
-        }
-    </style>
+  /* Responsive */
+  @media (max-width: 440px) {
+    .tree {
+      width: 160px;
+      height: 250px;
+    }
+    .trunk {
+      width: 34px;
+      height: 95px;
+      margin-left: -17px;
+    }
+    .branch1,
+    .branch2 {
+      width: 100px;
+      height: 16px;
+      bottom: 95px;
+      margin-left: -85px;
+    }
+    .branch2 {
+      margin-left: 15px;
+    }
+    .falling-hearts {
+      width: 160px;
+      height: 230px;
+    }
+  }
+</style>
 </head>
 <body>
-    <!-- Background Stars -->
-    <div class="stars" id="stars"></div>
 
-    <!-- Background Music -->
-    <audio id="bgMusic" loop>
-        <source src="song.mp3" type="audio/mpeg">
-    </audio>
+<h1>Bestie Love Tree</h1>
 
-    <!-- Main Container -->
-    <div class="container">
-        <div class="tree">
-            <!-- Tree Trunk -->
-            <div class="tree-trunk"></div>
-            
-            <!-- Tree Branches -->
-            <div class="tree-branches">
-                <div class="branch branch1" style="--rotation: -30deg;"></div>
-                <div class="branch branch2" style="--rotation: 25deg;"></div>
-                <div class="branch branch3" style="--rotation: -45deg;"></div>
-                <div class="branch branch4" style="--rotation: 40deg;"></div>
-                <div class="branch branch5" style="--rotation: -10deg;"></div>
-            </div>
+<div class="tree" aria-label="Tree with hearts instead of leaves">
+  <div class="trunk"></div>
+  <div class="branch branch1"></div>
+  <div class="branch branch2"></div>
 
-            <!-- Clickable Hearts -->
-            <div class="clickable-heart" style="top: 20%; left: 40%;" onclick="showQuestion(1)">❤️</div>
-            <div class="clickable-heart" style="top: 35%; right: 20%;" onclick="showQuestion(2)">❤️</div>
-            <div class="clickable-heart" style="top: 50%; left: 15%;" onclick="showQuestion(3)">❤️</div>
-            <div class="clickable-heart" style="top: 65%; right: 30%;" onclick="showQuestion(4)">❤️</div>
-        </div>
+  <!-- Static hearts as leaves -->
+  <div class="heart leaf1" aria-hidden="true"></div>
+  <div class="heart leaf2" aria-hidden="true"></div>
+  <div class="heart leaf3" aria-hidden="true"></div>
+
+  <!-- Falling hearts clickable -->
+  <div class="falling-hearts" aria-live="polite" aria-label="Falling hearts, click on hearts for fun questions">
+    <div class="heart" tabindex="0" role="button" aria-pressed="false" aria-label="Falling heart 1"></div>
+    <div class="heart" tabindex="0" role="button" aria-pressed="false" aria-label="Falling heart 2"></div>
+    <div class="heart" tabindex="0" role="button" aria-pressed="false" aria-label="Falling heart 3"></div>
+    <div class="heart" tabindex="0" role="button" aria-pressed="false" aria-label="Falling heart 4"></div>
+    <div class="heart" tabindex="0" role="button" aria-pressed="false" aria-label="Falling heart 5"></div>
+  </div>
+</div>
+
+<!-- Question Modal Structure -->
+<div class="overlay" role="dialog" aria-modal="true" aria-labelledby="question-title">
+  <div class="modal" tabindex="-1">
+    <h2 id="question-title">Question Text</h2>
+    <div class="btn-group" role="group" aria-label="Answer choices">
+      <!-- Buttons inserted dynamically -->
     </div>
+    <div class="success-msg" aria-live="polite"></div>
+  </div>
+</div>
 
-    <!-- Modal for Questions -->
-    <div class="modal" id="modal">
-        <div class="modal-content">
-            <div class="question" id="questionText"></div>
-            <div class="options" id="optionsContainer"></div>
-        </div>
-    </div>
+<script>
+  (() => {
+    const overlay = document.querySelector('.overlay');
+    const modal = overlay.querySelector('.modal');
+    const questionTitle = overlay.querySelector('#question-title');
+    const btnGroup = overlay.querySelector('.btn-group');
+    const successMsg = overlay.querySelector('.success-msg');
 
-    <!-- Final Reveal -->
-    <div class="final-reveal" id="finalReveal">
-        <div class="reveal-content">
-            <div class="image-container">
-                <div class="main-image">
-                    <img src="pic2.jpg" alt="Main Picture">
-                </div>
-                <div class="side-image">
-                    <img src="pic1.jpg" alt="Side Picture">
-                </div>
-            </div>
-            <div class="romantic-text">
-                Your beauty shines brighter than every star, my precious bestie ❤️
-            </div>
-        </div>
-    </div>
+    // Questions + Answers config:
+    // answers is array of objects { text, correct:boolean, id:string }
+    // id used for logic for sliding buttons on incorrect clicks
+    const questions = [
+      {
+        id: "q1",
+        text: "ARE YOU MY BESTIE QT ?",
+        answers: [
+          { id: "yes1", text: "Yes", correct: true },
+          { id: "no1", text: "No", correct: false }
+        ],
+        successText: "Hurrayyy! I know that 😍"
+      },
+      {
+        id: "q2",
+        text: "Choose one of them:",
+        answers: [
+          { id: "me2", text: "Me", correct: true },
+          { id: "golgape2", text: "Golgapee", correct: false }
+        ],
+        successText: "Heheheh! I know you choosed me 😜"
+      },
+      {
+        id: "q3",
+        text: "Tumhari voice iti pyari kese yrr? Ak song suna digi kya?",
+        answers: [
+          { id: "yes3", text: "Yes", correct: true },
+          { id: "no3", text: "No", correct: false }
+        ],
+        successText: "Aww! You're the sweetest! 🎶❤️"
+      }
+    ];
 
-    <script>
-        // Initialize everything when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            createStars();
-            createHeartParticles();
-            createTreeHearts();
-            
-            // Start music
-            const music = document.getElementById('bgMusic');
-            music.playbackRate = 1.25;
-            
-            // Try to play music immediately
-            const playMusic = () => {
-                music.play().catch(e => {
-                    console.log('Autoplay prevented, will play on first user interaction');
-                });
-            };
-            
-            playMusic();
-            
-            // Fallback: play on first click anywhere
-            document.addEventListener('click', function() {
-                music.play().catch(e => console.log('Music play failed'));
-            }, { once: true });
-        });
+    // State tracking
+    let currentQuestionIndex = -1;
+    let noButtonSliding = false;
 
-        // Create animated stars
-        function createStars() {
-            const starsContainer = document.getElementById('stars');
-            for (let i = 0; i < 100; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 100 + '%';
-                star.style.width = star.style.height = (Math.random() * 3 + 1) + 'px';
-                star.style.animationDelay = Math.random() * 2 + 's';
-                starsContainer.appendChild(star);
+    // To get an accessible focus trap, when modal opens we focus on first button
+    // handle buttons slide logic
+    function createButton(answer) {
+      const btn = document.createElement('button');
+      btn.textContent = answer.text;
+      btn.type = 'button';
+      btn.dataset.id = answer.id;
+      btn.dataset.correct = answer.correct;
+
+      // Add accessible features
+      btn.setAttribute('aria-pressed', 'false');
+
+      // Sliding only applies for incorrect answers (No or wrong choices)
+      // We'll attach a mouseenter/touchstart event to slide it away if user tries to click no
+      if (!answer.correct) {
+        // On mouseenter and touchstart slide button and disable click for 700ms
+        let sliding = false;
+
+        function slideButton() {
+          if (sliding) return;
+          sliding = true;
+          btn.classList.add('slide-right');
+          setTimeout(() => {
+            btn.classList.remove('slide-right');
+            sliding = false;
+          }, 600);
+        }
+        btn.addEventListener('mouseenter', slideButton);
+        btn.addEventListener('touchstart', slideButton, {passive: true});
+        btn.addEventListener('focus', slideButton);
+      }
+
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (btn.disabled) return;
+
+        if (btn.dataset.correct === "true") {
+          // Correct answer clicked
+          successMsg.textContent = '';
+          for (let b of btnGroup.children) b.disabled = true;
+          btnGroup.style.pointerEvents = 'none';
+
+          // Show success text
+          successMsg.textContent = currentQuestion.successText;
+
+          // After 2 seconds, go to next question or finish
+          setTimeout(() => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+              renderQuestion(currentQuestionIndex);
+            } else {
+              // Finished all questions; close modal
+              closeModal();
+              alert("Thank you for playing! ❤️");
             }
+          }, 2000);
+        } else {
+          // Incorrect answer clicked - (shouldn't be possible by sliding, but just in case)
+          // Animate no btn quickly and disable clicking for 1.2s
+          btn.disabled = true;
+          btn.classList.add('slide-right');
+          setTimeout(() => {
+            btn.classList.remove('slide-right');
+            btn.disabled = false;
+          }, 1200);
         }
+      });
 
-        // Create falling heart particles
-        function createHeartParticles() {
-            setInterval(() => {
-                const heart = document.createElement('div');
-                heart.className = 'heart-particle';
-                heart.innerHTML = '❤️';
-                heart.style.left = Math.random() * 100 + '%';
-                heart.style.animationDuration = (Math.random() * 3 + 5) + 's';
-                heart.style.animationDelay = Math.random() * 2 + 's';
-                document.body.appendChild(heart);
+      return btn;
+    }
 
-                // Remove heart after animation
-                setTimeout(() => {
-                    if (heart.parentNode) {
-                        heart.parentNode.removeChild(heart);
-                    }
-                }, 8000);
-            }, 800);
+    function renderQuestion(index) {
+      currentQuestion = questions[index];
+      questionTitle.textContent = currentQuestion.text;
+      successMsg.textContent = '';
+      btnGroup.innerHTML = '';
+      btnGroup.style.pointerEvents = 'auto';
+
+      for (const answer of currentQuestion.answers) {
+        const btn = createButton(answer);
+        btnGroup.appendChild(btn);
+      }
+
+      // Focus first button on question show for accessibility
+      setTimeout(() => {
+        if (btnGroup.firstElementChild) {
+          btnGroup.firstElementChild.focus();
         }
+      }, 100);
+    }
 
-        // Create tree hearts (leaves)
-        function createTreeHearts() {
-            const branches = document.querySelector('.tree-branches');
-            for (let i = 0; i < 30; i++) {
-                const heart = document.createElement('div');
-                heart.className = 'tree-heart';
-                heart.innerHTML = '❤️';
-                heart.style.left = Math.random() * 100 + '%';
-                heart.style.top = Math.random() * 100 + '%';
-                heart.style.animationDelay = Math.random() * 2 + 's';
-                branches.appendChild(heart);
+    function openModal() {
+      currentQuestionIndex = 0;
+      renderQuestion(currentQuestionIndex);
+      overlay.classList.add('active');
+      modal.focus();
+      // Stop heart fall animations during modal open for clarity
+      hearts.forEach(h => {
+        h.style.animationPlayState = 'paused';
+      });
+    }
+    function closeModal() {
+      overlay.classList.remove('active');
+      successMsg.textContent = '';
+      btnGroup.innerHTML = '';
+      // Resume heart animations
+      hearts.forEach(h => {
+        h.style.animationPlayState = '';
+      });
+    }
 
-                // Make some hearts fall occasionally
-                if (Math.random() > 0.7) {
-                    setTimeout(() => {
-                        heart.style.animation = 'fall 3s linear forwards';
-                        setTimeout(() => {
-                            if (heart.parentNode) {
-                                heart.parentNode.removeChild(heart);
-                            }
-                        }, 3000);
-                    }, Math.random() * 5000);
-                }
-            }
+    // Accessibility: close modal with ESC key
+    overlay.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        closeModal();
+      }
+    });
+
+    // Add click on falling hearts to open modal
+    const hearts = Array.from(document.querySelectorAll('.falling-hearts .heart'));
+
+    hearts.forEach((heart) => {
+      heart.addEventListener('click', () => {
+        openModal();
+      });
+      heart.addEventListener('keydown', (e) => {
+        if (e.key === "Enter" || e.key=== " " ) {
+          e.preventDefault();
+          openModal();
         }
+      });
+    });
 
-        // Questions data
-        const questions = {
-            1: {
-                text: "Why you are so beautiful?",
-                options: ["Because I smile", "Because of you"]
-            },
-            2: {
-                text: "Apki aawaaz mujhe maar degi kisi din, gaogi 'Janemann' kya?",
-                options: ["Yes", "No"]
-            },
-            3: {
-                text: "Agar mai poochu: Momos ya Mujhe — kisko chunogi?",
-                options: ["Momos", "Mujhe"]
-            },
-            4: {
-                text: "I know you are cute — kya tum meri bestie banogi ache wali?",
-                options: ["Yes", "No"]
-            }
-        };
+    // Trap focus inside modal when open for accessibility - basic trap
+    document.addEventListener('focus', (e) => {
+      if (!overlay.classList.contains('active')) return;
+      if (!overlay.contains(e.target)) {
+        e.stopPropagation();
+        modal.focus();
+      }
+    }, true);
+  })();
+</script>
 
-        // Show question modal
-        function showQuestion(questionNum) {
-            const modal = document.getElementById('modal');
-            const questionText = document.getElementById('questionText');
-            const optionsContainer = document.getElementById('optionsContainer');
-
-            const question = questions[questionNum];
-            questionText.textContent = question.text;
-
-            // Clear previous options
-            optionsContainer.innerHTML = '';
-
-            // Create option buttons
-            question.options.forEach((option, index) => {
-                const button = document.createElement('button');
-                button.className = 'option-btn';
-                button.textContent = option;
-                button.onclick = () => handleAnswer(questionNum, option, button);
-                optionsContainer.appendChild(button);
-            });
-
-            modal.style.display = 'flex';
-        }
-
-        // Handle answer selection
-        function handleAnswer(questionNum, answer, button) {
-            // Special case for question 3 - Momos option
-            if (questionNum === 3 && answer === "Momos") {
-                button.classList.add('slide-away');
-                setTimeout(() => {
-                    button.style.display = 'none';
-                }, 1000);
-                return;
-            }
-
-            // Special case for question 4 - final question
-            if (questionNum === 4) {
-                closeModal();
-                if (answer === "Yes") {
-                    showFinalReveal();
-                } else {
-                    showKattiMessage();
-                }
-                return;
-            }
-
-            // For other questions, just close modal
-            closeModal();
-        }
-
-        // Close modal
-        function closeModal() {
-            const modal = document.getElementById('modal');
-            modal.style.display = 'none';
-        }
-
-        // Show final reveal
-        function showFinalReveal() {
-            const finalReveal = document.getElementById('finalReveal');
-            finalReveal.style.display = 'flex';
-        }
-
-        // Show katti message
-        function showKattiMessage() {
-            const modal = document.getElementById('modal');
-            const modalContent = modal.querySelector('.modal-content');
-            
-            modalContent.innerHTML = '<div class="katti-text">Katti hu tumse ab 😤</div>';
-            modal.style.display = 'flex';
-            
-            setTimeout(() => {
-                closeModal();
-            }, 3000);
-        }
-
-        // Close modal when clicking outside
-        document.getElementById('modal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal();
-            }
-        });
-
-        // Prevent context menu on images
-        document.addEventListener('contextmenu', function(e) {
-            if (e.target.tagName === 'IMG') {
-                e.preventDefault();
-            }
-        });
-    </script>
 </body>
 </html>
-
-
-This single HTML file creates a beautiful romantic surprise website with all the requested features:
-
-
-**Key Features:**
-• ✨ Dark night sky with twinkling stars
-• 💖 Falling heart particles for dreamy effect
-• 🌳 Centered glowing white tree with animated branches
-• 💕 Small glowing hearts as leaves that sway and fall
-• 4 big bouncing clickable hearts on the tree
-• 📝 Smooth pop-up questions with glowing borders
-• 🎵 Auto-playing background music at 1.25x speed
-• 📱 Fully responsive design for mobile and desktop
-• 🖼️ Beautiful glowing image frames with animated gradient borders
-• ✨ Smooth animations throughout (falling, glowing, pulsing, sliding, fading)
-
-
-**Special Interactions:**
-• Question 3: "Momos" button slides away when clicked
-• Question 4: Shows final reveal with images or "katti" message
-• Music continues seamlessly throughout all interactions
-• All animations are smooth and romantic
-
-
-**Technical Details:**
-• Single file with embedded CSS and JavaScript
-• No external dependencies
-• Clean, tested, and error-free code
-• Perfect responsive scaling
-• Optimized for both mobile and laptop screens
-
-
-Just place `pic1.jpg`, `pic2.jpg`, and `song.mp3` in the same folder as this HTML file, and everything will work perfectly! 🎉
