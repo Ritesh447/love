@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Bestie Love Tree Animation & Questions</title>
 <style>
-  /* ---------- TREE AND HEART ANIMATION ---------- */
+  /* BODY and BASE */
   body {
-    background: linear-gradient(135deg, #fceeeb 0%, #a6e3e9 100%);
+    background: #adeec9;
     margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
@@ -16,140 +16,155 @@
     align-items: center;
     padding: 20px;
     overflow-x: hidden;
+    overflow-y: auto;
   }
 
   h1 {
     margin-bottom: 10px;
-    color: #d90429;
-    text-shadow: 1px 1px 3px #810032;
+    color: #2e7d32;
+    text-shadow: 1px 1px 3px #145214;
+    user-select: none;
   }
 
+  /* ----------- TREE CONTAINER ----------- */
   .tree {
     position: relative;
-    width: 220px;
-    height: 340px;
-    margin: 30px auto 60px;
-    background: linear-gradient(to top, #5d3a00 0%, #a67c00 60%, transparent 60%);
-    border-radius: 0 0 50px 50px;
-    box-shadow:
-      inset 0 -20px 18px #4b2e00,
-      0 2px 5px rgba(0,0,0,0.2);
+    width: 260px;
+    height: 380px;
+    margin: 40px auto 70px;
+    user-select: none;
   }
-  /* trunk */
+
+  /* TREE TRUNK */
   .trunk {
     position: absolute;
     bottom: 0;
     left: 50%;
-    width: 48px;
-    height: 130px;
-    margin-left: -24px;
-    background: linear-gradient(180deg, #4b2e00 0%, #311b00 100%);
-    border-radius: 24px 24px 10px 10px;
-    box-shadow: inset 0 2px 5px rgba(255,255,255,0.3);
+    width: 60px;
+    height: 140px;
+    margin-left: -30px;
+    background: 
+      linear-gradient(180deg, #5b3a07, #3c2200);
+    border-radius: 30px 30px 12px 12px;
+    box-shadow: inset 3px 0 6px #784f0f,
+                inset -3px 0 6px #3c2200;
     z-index: 5;
   }
 
-  /* branches */
-  .branch {
+  /* TREE MAIN BODY - multiple overlapping leaf clusters - heart shaped leaves */
+  .leaves-group {
     position: absolute;
-    background: linear-gradient(90deg, #4b2e00 0%, #311b00 100%);
-    border-radius: 10px;
-    box-shadow: 0 0 4px #3b2700 inset;
-  }
-  .branch1 {
     bottom: 130px;
     left: 50%;
-    width: 140px;
-    height: 24px;
-    margin-left: -113px;
-    transform: rotate(-27deg);
-    transform-origin: right center;
+    transform: translateX(-50%);
+    width: 250px;
+    height: 230px;
+    pointer-events: none;
     z-index: 4;
   }
-  .branch2 {
-    bottom: 130px;
-    left: 50%;
-    width: 140px;
-    height: 24px;
-    margin-left: 23px;
-    transform: rotate(27deg);
-    transform-origin: left center;
-    z-index: 4;
+  /* cluster positions */
+  .cluster {
+    position: absolute;
+  }
+  .cluster1 {
+    top: 10px; left: 10px;
+  }
+  .cluster2 {
+    top: 20px; left: 85px;
+  }
+  .cluster3 {
+    top: 80px; left: 30px;
+  }
+  .cluster4 {
+    top: 70px; left: 140px;
+  }
+  .cluster5 {
+    top: 140px; left: 85px;
+  }
+  .cluster6 {
+    top: 160px; left: 180px;
   }
 
-  /* Heart shape foundation */
-  .heart {
-    position: absolute;
-    width: 24px;
-    height: 21px;
-    background: #e63946;
+  /* HEART LEAF SHAPE */
+  .heart-leaf {
+    position: relative;
+    width: 28px;
+    height: 25px;
+    background: #e53935;
     transform: rotate(-45deg);
-    cursor: pointer;
-    will-change: transform, opacity;
-    user-select: none;
+    margin: 2px;
+    border-radius: 4px;
     box-shadow:
-      0 2px 6px rgba(230, 57, 70, 0.5),
-      inset 0 0 6px #f06d78;
-    transition: filter 0.3s ease;
+      0 1px 3px rgba(255, 105, 110, 0.6),
+      inset 0 0 6px #f47271;
   }
-  .heart:hover {
-    filter: drop-shadow(0 0 6px #ff718d);
-  }
-  .heart::before,
-  .heart::after {
+  .heart-leaf::before,
+  .heart-leaf::after {
     content: "";
     position: absolute;
-    width: 24px;
-    height: 21px;
-    background: #e63946;
+    width: 28px;
+    height: 25px;
+    background: #e53935;
     border-radius: 50%;
-    box-shadow: inset 0 0 8px #f06d78;
+    box-shadow: inset 0 0 10px #f47271;
   }
-  .heart::before {
-    top: -13px;
+  .heart-leaf::before {
+    top: -15px;
     left: 0;
   }
-  .heart::after {
+  .heart-leaf::after {
     top: 0;
-    left: 14px;
+    left: 18px;
   }
 
-  /* Static hearts as leaves */
-  .tree .heart.leaf1 {
-    bottom: 190px;
-    left: 35px;
-    transform: rotate(-45deg);
-    animation: none;
-    cursor: default;
-  }
-  .tree .heart.leaf2 {
-    bottom: 215px;
-    left: 87px;
-    transform: rotate(-45deg);
-    animation: none;
-    cursor: default;
-  }
-  .tree .heart.leaf3 {
-    bottom: 205px;
-    left: 145px;
-    transform: rotate(-45deg);
-    animation: none;
-    cursor: default;
-  }
-
-  /* Falling hearts container */
+  /* ----------- FALLING HEARTS ---------- */
   .falling-hearts {
     position: absolute;
     top: 0;
     left: 0;
-    width: 220px;
-    height: 320px;
+    width: 260px;
+    height: 370px;
     pointer-events: none;
     overflow: visible;
     z-index: 6;
   }
-
-  /* Falling hearts animation */
+  .falling-hearts .heart {
+    pointer-events: auto;
+    cursor: pointer;
+    position: absolute;
+    width: 22px;
+    height: 20px;
+    background: #e53935;
+    transform: rotate(-45deg);
+    will-change: transform, opacity;
+    user-select: none;
+    box-shadow:
+      0 1px 3px rgba(255, 105, 110, 0.6),
+      inset 0 0 6px #f47271;
+    transition: filter 0.3s ease;
+  }
+  .falling-hearts .heart:hover {
+    filter: drop-shadow(0 0 8px #ff718d);
+  }
+  .falling-hearts .heart::before,
+  .falling-hearts .heart::after {
+    content: "";
+    position: absolute;
+    width: 22px;
+    height: 20px;
+    background: #e53935;
+    border-radius: 50%;
+    box-shadow: inset 0 0 10px #f47271;
+  }
+  .falling-hearts .heart::before {
+    top: -13px;
+    left: 0;
+  }
+  .falling-hearts .heart::after {
+    top: 0;
+    left: 15px;
+  }
+  /* Falling animation */
   @keyframes fallHeart {
     0% {
       opacity: 1;
@@ -160,298 +175,356 @@
     }
     100% {
       opacity: 0;
-      transform: translateY(320px) rotate(45deg);
+      transform: translateY(360px) rotate(45deg);
     }
   }
-
   .falling-hearts .heart {
-    pointer-events: auto;
     animation-name: fallHeart;
     animation-timing-function: linear;
     animation-iteration-count: infinite;
   }
+  /* Random left, delay, durations */
+  .falling-hearts .heart:nth-child(1) { left: 20px; animation-duration: 5300ms; animation-delay: 0ms;}
+  .falling-hearts .heart:nth-child(2) { left: 50px; animation-duration: 4200ms; animation-delay: 1500ms;}
+  .falling-hearts .heart:nth-child(3) { left: 95px; animation-duration: 5800ms; animation-delay: 700ms;}
+  .falling-hearts .heart:nth-child(4) { left: 145px; animation-duration: 5100ms; animation-delay: 2500ms;}
+  .falling-hearts .heart:nth-child(5) { left: 200px; animation-duration: 4600ms; animation-delay: 3200ms;}
 
-  /* Different random left, delays and durations */
-  .falling-hearts .heart:nth-child(1) {
-    left: 30px;
-    animation-duration: 5300ms;
-    animation-delay: 0ms;
-  }
-  .falling-hearts .heart:nth-child(2) {
-    left: 60px;
-    animation-duration: 4200ms;
-    animation-delay: 1500ms;
-  }
-  .falling-hearts .heart:nth-child(3) {
-    left: 110px;
-    animation-duration: 5800ms;
-    animation-delay: 700ms;
-  }
-  .falling-hearts .heart:nth-child(4) {
-    left: 158px;
-    animation-duration: 5100ms;
-    animation-delay: 2500ms;
-  }
-  .falling-hearts .heart:nth-child(5) {
-    left: 95px;
-    animation-duration: 4600ms;
-    animation-delay: 3200ms;
-  }
-
-  /* ---------- QUESTION MODAL ---------- */
+  /* --------- QUESTION MODAL ---------- */
   .overlay {
     position: fixed;
     top: 0;
     left: 0;
     right:0;
     bottom: 0;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0,0,0,0.55);
     display: none;
     justify-content: center;
     align-items: center;
     z-index: 20;
     padding: 20px;
   }
-
   .overlay.active {
     display: flex;
   }
 
   .modal {
-    background: #fff8f9;
-    max-width: 360px;
+    background: #fffbe6;
+    max-width: 370px;
     width: 100%;
-    padding: 25px 30px 30px;
-    border-radius: 15px;
+    padding: 28px 36px 32px;
+    border-radius: 20px;
     box-shadow:
-      0 15px 30px rgba(230, 57, 70, 0.3),
-      inset 0 0 12px #fddede;
+      0 15px 35px rgba(140, 58, 58, 0.3),
+      inset 0 0 18px #f7d3d3;
     text-align: center;
     user-select: none;
     position: relative;
   }
 
   .modal h2 {
-    color: #d90429;
-    margin-bottom: 20px;
+    color: #a91d1d;
+    margin-bottom: 26px;
     font-weight: 700;
-    font-size: 1.6rem;
+    font-size: 1.7rem;
+    letter-spacing: 0.05em;
   }
 
-  /* Buttons styles */
+  /* Buttons */
   .btn-group {
     display: flex;
     justify-content: center;
-    gap: 24px;
+    gap: 26px;
     flex-wrap: nowrap;
   }
-
   button {
     cursor: pointer;
-    background: #e63946;
+    background: #d32f2f;
     border: none;
     color: white;
     font-weight: 700;
-    padding: 14px 36px;
+    padding: 14px 38px;
     border-radius: 50px;
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     box-shadow:
-      0 4px 9px rgba(230, 57, 70, 0.6);
+      0 6px 12px rgba(211, 47, 47, 0.7);
     transition:
-      background-color 0.3s ease,
-      transform 0.3s ease,
-      box-shadow 0.3s ease;
+      background-color 0.35s ease,
+      transform 0.35s ease,
+      box-shadow 0.35s ease;
     position: relative;
     user-select: none;
   }
-
   button:focus-visible {
-    outline: 2px solid #e63946aa;
-    outline-offset: 3px;
+    outline: 3px solid #b71c1ccc;
+    outline-offset: 4px;
   }
-
   button:hover:not(:disabled) {
-    background-color: #f44363;
-    box-shadow: 0 8px 15px rgba(244, 67, 99, 0.7);
+    background-color: #f44336;
+    box-shadow: 0 10px 22px rgba(244, 67, 54,0.9);
   }
-
-  /* Disabled style */
   button:disabled {
     cursor: not-allowed;
-    background-color: #bbb;
+    background-color: #a6a6a6;
     box-shadow: none;
   }
-
-  /* Slide animation for "no" and wrong options */
+  /* Slide animations */
   @keyframes slideRight {
     0% { transform: translateX(0); }
-    25% { transform: translateX(30px); }
+    25% { transform: translateX(35px); }
     50% { transform: translateX(0); }
-    75% { transform: translateX(20px); }
+    75% { transform: translateX(25px); }
     100% { transform: translateX(0); }
   }
-  @keyframes slideLeft {
-    0% { transform: translateX(0); }
-    25% { transform: translateX(-30px); }
-    50% { transform: translateX(0); }
-    75% { transform: translateX(-20px); }
-    100% { transform: translateX(0); }
-  }
-
   .slide-right {
-    animation: slideRight 0.5s ease;
-  }
-  .slide-left {
-    animation: slideLeft 0.5s ease;
+    animation: slideRight 0.6s ease;
   }
 
-  /* Success message text */
+  /* Celebration scaling */
+  @keyframes celebrateScale {
+    0%   { transform: scale(1) rotate(0deg); }
+    25%  { transform: scale(1.23) rotate(12deg); }
+    50%  { transform: scale(1.1) rotate(-10deg); }
+    75%  { transform: scale(1.15) rotate(7deg); }
+    100% { transform: scale(1) rotate(0deg); }
+  }
+  .celebrate {
+    animation: celebrateScale 0.8s ease forwards;
+  }
+
   .success-msg {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #1b4332;
-    margin-top: 20px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #27632a;
+    margin-top: 24px;
+    min-height: 32px;
+    user-select: text;
   }
 
-  /* ----- FINAL IMAGE SELECTION LAYER ----- */
+  /* ----- FINAL IMAGE STEP ----- */
   .final-step {
     position: fixed;
     top: 0;
     left: 0;
     right:0;
     bottom: 0;
-    background: rgba(0,0,0,0.6);
+    background: rgba(12, 55, 30, 0.9);
     display: none;
     justify-content: center;
     align-items: center;
     z-index: 30;
     flex-direction: column;
-    padding: 20px;
+    padding: 24px;
+    user-select: none;
   }
   .final-step.active {
     display: flex;
   }
+
   .final-images {
     display: flex;
-    gap: 30px;
-    margin-bottom: 15px;
+    gap: 32px;
+    margin-bottom: 20px;
   }
   .final-images img {
-    width: 140px;
-    height: 140px;
-    border-radius: 15px;
-    border: 4px solid transparent;
-    box-shadow: 0 0 10px #e63946;
+    width: 150px;
+    height: 150px;
+    border-radius: 20px;
+    border: 5px solid transparent;
+    box-shadow: 0 0 20px #e74c3c;
     cursor: pointer;
-    transition: border-color 0.5s ease, box-shadow 0.5s ease, transform 0.3s ease;
+    transition: box-shadow 0.5s ease, transform 0.35s ease;
   }
   .final-images img.glow {
-    border-color: #e63946;
+    border-color: #e74c3c;
     box-shadow:
-      0 0 20px 6px #e63946aa,
-      0 0 40px 12px #e6394622;
-    transform: scale(1.08);
-  }
-  .final-text {
-    color: #fafafa;
-    font-size: 1.3rem;
-    font-weight: 700;
-    text-shadow: 0 2px 6px #730022;
+      0 0 36px 8px #e74c3caa,
+      0 0 60px 16px #e74c3c44;
+    transform: scale(1.12);
   }
 
-  /* ----- SECOND IMAGE CHOICE ----- */
+  .final-text {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #f8f1f1;
+    text-shadow:
+      1px 1px 5px #9b1c1c,
+      0 0 15px #9b1c1c99;
+    user-select: text;
+  }
+
+  /* --- SECOND IMAGE SELECT STEP --- */
   .second-step {
     position: fixed;
-    top: 0;
-    left: 0;
-    right:0;
-    bottom: 0;
-    background: rgba(0,0,0,0.75);
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(12, 25, 32, 0.85);
     display: none;
     justify-content: center;
     align-items: center;
     z-index: 40;
     flex-direction: column;
-    padding: 20px;
+    padding: 22px;
+    user-select: none;
   }
   .second-step.active {
     display: flex;
   }
   .second-images {
     display: flex;
-    gap: 30px;
-    margin-bottom: 25px;
+    gap: 38px;
+    margin-bottom: 30px;
   }
   .second-images .img-container {
     cursor: pointer;
     text-align: center;
     user-select: none;
+    outline-offset: 5px;
   }
   .second-images img {
-    width: 140px;
-    height: 140px;
-    border-radius: 30px;
-    border: 4px solid #e63946;
-    box-shadow:
-      0 0 12px #e63946bb;
-    transition:
-      box-shadow 0.3s ease,
-      transform 0.2s ease;
+    width: 150px;
+    height: 150px;
+    border-radius: 35px;
+    border: 4px solid #c62828;
+    box-shadow: 0 0 14px #e74c3cdd;
     display: block;
-    margin-bottom: 8px;
+    transition: box-shadow 0.3s ease, transform 0.23s ease, filter 0.3s ease;
+    margin-bottom: 9px;
   }
-  .second-images .img-container:hover img {
-    box-shadow:
-      0 0 30px 4px #e63946ee;
-    transform: scale(1.08);
+  .second-images .img-container:hover img,
+  .second-images .img-container:focus img {
+    box-shadow: 0 0 32px 8px #e74c3cff;
+    transform: scale(1.1);
   }
   .img-label {
     font-weight: 700;
-    color: #fab1a0;
-    font-size: 1rem;
-    letter-spacing: 0.05em;
+    color: #f9a399;
+    font-size: 1.05rem;
+    letter-spacing: 0.07em;
   }
 
-  /* Animation for celebration */
-  @keyframes celebrateScale {
-    0% { transform: scale(1) rotate(0deg); }
-    30% { transform: scale(1.2) rotate(15deg); }
-    60% { transform: scale(1.1) rotate(-10deg); }
-    100% { transform: scale(1) rotate(0deg);}
+  .second-images .img-container[aria-pressed='true'] img {
+    filter: none !important;
+    box-shadow: 0 0 40px 15px #ff6f61 !important;
+    transform: scale(1.15) !important;
   }
-  .celebrate {
-    animation: celebrateScale 0.7s ease forwards;
+  .second-images .img-container[aria-pressed='false'] img {
+    filter: grayscale(100%);
   }
 
-  /* Responsive adjustments */
-  @media (max-width: 440px) {
+  /* --- BOOM BLAST ANIMATION --- */
+  @keyframes boomBlast {
+    0% {
+      filter: brightness(1);
+      transform: scale(1) rotate(0) translate(0,0);
+      opacity: 1;
+      box-shadow: none;
+    }
+    20% {
+      filter: brightness(2);
+      transform: scale(1.4) rotate(10deg);
+      box-shadow: 0 0 25px 12px #ff4949aa,
+                  0 0 60px 18px #ff0000cc;
+    }
+    40% {
+      filter: brightness(1);
+      transform: scale(1) rotate(-7deg) translate(4px, -3px);
+      box-shadow: 0 0 20px 10px #ff6f6f99;
+    }
+    60% {
+      filter: brightness(1.1);
+      transform: scale(1.12) rotate(0deg);
+      box-shadow: 0 0 30px 12px #ff4545ff;
+    }
+    80%, 100% {
+      filter: brightness(1);
+      transform: scale(1) rotate(0) translate(0,0);
+      box-shadow: none;
+      opacity: 1;
+    }
+  }
+  .boom-blast {
+    animation: boomBlast 0.9s ease forwards;
+  }
+
+  /* --- MAIL ANIMATION --- */
+  .mail-container {
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    z-index: 50;
+    cursor: pointer;
+    user-select: none;
+    width: 140px;
+    height: 110px;
+    background: linear-gradient(135deg, #fff7eb, #fcdcb9);
+    border-radius: 12px;
+    box-shadow:
+      0 15px 25px rgba(0,0,0,0.2);
+    border: 3px solid #efb263;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.4s ease;
+    overflow: hidden;
+  }
+  .mail-container.active {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  .mail-flap {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 55px;
+    background: linear-gradient(to bottom right, #f1b35a, #db9900);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    border-bottom: 3px solid #c1810a;
+    z-index: 10;
+    transition: background-color 0.3s ease;
+  }
+  .mail-container:hover .mail-flap {
+    background: linear-gradient(to bottom right, #ffb400, #ff8e00);
+  }
+  .mail-text {
+    position: relative;
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: #874300;
+    letter-spacing: 0.06em;
+    user-select: none;
+  }
+
+  /* Responsive */
+  @media (max-width: 460px) {
     .tree {
-      width: 160px;
-      height: 250px;
+      width: 200px;
+      height: 300px;
     }
     .trunk {
-      width: 34px;
-      height: 95px;
-      margin-left: -17px;
+      width: 48px;
+      height: 110px;
+      margin-left: -24px;
     }
-    .branch1,
-    .branch2 {
-      width: 100px;
-      height: 16px;
-      bottom: 95px;
-      margin-left: -85px;
-    }
-    .branch2 {
-      margin-left: 15px;
+    .leaves-group {
+      width: 180px;
+      height: 165px;
+      bottom: 110px;
     }
     .falling-hearts {
-      width: 160px;
-      height: 230px;
+      width: 200px;
+      height: 300px;
     }
     .final-images img,
     .second-images img {
       width: 110px;
       height: 110px;
+      border-radius: 15px;
+    }
+    .mail-container {
+      width: 110px;
+      height: 85px;
     }
   }
 </style>
@@ -461,14 +534,37 @@
 <h1>Bestie Love Tree</h1>
 
 <div class="tree" aria-label="Tree with hearts instead of leaves">
-  <div class="trunk"></div>
-  <div class="branch branch1"></div>
-  <div class="branch branch2"></div>
-
-  <!-- Static hearts as leaves -->
-  <div class="heart leaf1" aria-hidden="true"></div>
-  <div class="heart leaf2" aria-hidden="true"></div>
-  <div class="heart leaf3" aria-hidden="true"></div>
+  <div class="trunk" aria-hidden="true"></div>
+  <div class="leaves-group" aria-hidden="true">
+    <div class="cluster cluster1">
+      <div class="heart-leaf"></div>
+      <div class="heart-leaf"></div>
+      <div class="heart-leaf"></div>
+    </div>
+    <div class="cluster cluster2">
+      <div class="heart-leaf"></div>
+      <div class="heart-leaf"></div>
+      <div class="heart-leaf"></div>
+      <div class="heart-leaf"></div>
+    </div>
+    <div class="cluster cluster3">
+      <div class="heart-leaf"></div>
+      <div class="heart-leaf"></div>
+    </div>
+    <div class="cluster cluster4">
+      <div class="heart-leaf"></div>
+      <div class="heart-leaf"></div>
+      <div class="heart-leaf"></div>
+    </div>
+    <div class="cluster cluster5">
+      <div class="heart-leaf"></div>
+      <div class="heart-leaf"></div>
+    </div>
+    <div class="cluster cluster6">
+      <div class="heart-leaf"></div>
+      <div class="heart-leaf"></div>
+    </div>
+  </div>
 
   <!-- Falling hearts clickable -->
   <div class="falling-hearts" aria-live="polite" aria-label="Falling hearts, click on hearts for fun questions">
@@ -491,24 +587,30 @@
   </div>
 </div>
 
-<!-- Final image selection step -->
+<!-- Mail container -->
+<div class="mail-container" role="button" aria-label="Mail to open picture selection" tabindex="0">
+  <div class="mail-flap"></div>
+  <div class="mail-text">Open Mail</div>
+</div>
+
+<!-- Final image selection -->
 <div class="final-step" aria-label="Final beautiful images selection" role="dialog" aria-modal="true" aria-live="polite" tabindex="-1">
   <div class="final-images">
-    <img src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=140&q=80" alt="Beautiful Picture 1" tabindex="0" />
-    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=140&q=80" alt="Beautiful Picture 2" tabindex="0" />
+    <img src="https://raw.githubusercontent.com/yourusername/yourrepo/main/pic1.jpg" alt="Beautiful Picture 1" tabindex="0" />
+    <img src="https://raw.githubusercontent.com/yourusername/yourrepo/main/pic2.jpg" alt="Beautiful Picture 2" tabindex="0" />
   </div>
   <div class="final-text">You are very beautiful, my qtu bestu ❤️</div>
 </div>
 
-<!-- Second image choice step -->
+<!-- Second image choice -->
 <div class="second-step" aria-label="Second image choice" role="dialog" aria-modal="true" aria-live="polite" tabindex="-1">
   <div class="second-images">
     <div class="img-container" tabindex="0" role="button" aria-pressed="false" aria-label="Picture 1">
-      <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=140&q=80" alt="Pic 1" />
+      <img src="https://raw.githubusercontent.com/yourusername/yourrepo/main/pic1.jpg" alt="Pic 1" />
       <div class="img-label">Pic 1</div>
     </div>
     <div class="img-container" tabindex="0" role="button" aria-pressed="false" aria-label="Picture 2">
-      <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=140&q=80" alt="Pic 2" />
+      <img src="https://raw.githubusercontent.com/yourusername/yourrepo/main/pic2.jpg" alt="Pic 2" />
       <div class="img-label">Pic 2</div>
     </div>
   </div>
@@ -531,13 +633,13 @@
     const secondImages = secondStep.querySelectorAll('.img-container');
     const hearts = Array.from(document.querySelectorAll('.falling-hearts .heart'));
     const audio = document.getElementById('bg-music');
+    const mailContainer = document.querySelector('.mail-container');
 
-    // Play music after user interaction or with autoplay (browser policies)
+    // Play music respecting browser autoplay policies
     function tryPlayAudio() {
       const p = audio.play();
       if (p !== undefined) {
         p.catch(() => {
-          // Autoplay blocked, wait for user interaction
           const startAudioOnInteraction = () => {
             audio.play();
             window.removeEventListener('click', startAudioOnInteraction);
@@ -593,7 +695,6 @@
       btn.setAttribute('aria-pressed', 'false');
 
       if (!answer.correct) {
-        // Slide away on mouseenter, touchstart, focus to prevent clicking no/wrong answers
         let sliding = false;
         function slideButton() {
           if (sliding) return;
@@ -617,16 +718,10 @@
           successMsg.textContent = '';
           for (let b of btnGroup.children) b.disabled = true;
           btnGroup.style.pointerEvents = 'none';
-          // Animate modal as celebration
           modal.classList.add('celebrate');
-
-          // Show success text
           successMsg.textContent = currentQuestion.successText;
-
-          // After celebration animation end (~ 700ms) start next or final step
           modal.addEventListener('animationend', onCelebrateEnd, {once:true});
         } else {
-          // Defensive fallback if clicked no (should be prevented)
           btn.disabled = true;
           btn.classList.add('slide-right');
           setTimeout(() => {
@@ -635,7 +730,6 @@
           }, 1200);
         }
       });
-
       return btn;
     }
 
@@ -645,9 +739,9 @@
       if (currentQuestionIndex < questions.length) {
         renderQuestion(currentQuestionIndex);
       } else {
-        // All questions done: close question modal, open final images step
         closeModal();
-        openFinalStep();
+        // Show mail with animation first
+        openMail();
       }
     }
 
@@ -671,7 +765,6 @@
       renderQuestion(currentQuestionIndex);
       overlay.classList.add('active');
       modal.focus();
-      // Pause heart animations
       hearts.forEach(h => h.style.animationPlayState = 'paused');
     }
     function closeModal() {
@@ -681,80 +774,101 @@
       hearts.forEach(h => h.style.animationPlayState = '');
     }
 
-    // Final step logic
-    function openFinalStep() {
+    // MAIL container animations and logic
+    let mailOpenTimeout;
+
+    function openMail() {
+      mailContainer.classList.add('active');
+      mailContainer.focus();
+      hearts.forEach(h => {
+        h.style.pointerEvents = 'none';
+        h.style.animationPlayState = 'paused';
+      });
+    }
+    function closeMail() {
+      mailContainer.classList.remove('active');
+    }
+
+    // BOOM blast animation on final images
+    function boomBlastAnimation(img, callback) {
+      img.classList.add('boom-blast');
+      img.addEventListener('animationend', () => {
+        img.classList.remove('boom-blast');
+        if (callback) callback();
+      }, {once:true});
+    }
+
+    // On mail click, show boom blasts on final images sequentially + then show finalStep
+    mailContainer.addEventListener('click', openFinalImagesFromMail);
+    mailContainer.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openFinalImagesFromMail();
+      }
+    });
+
+    function openFinalImagesFromMail() {
+      if (!mailContainer.classList.contains('active')) return;
+      closeMail();
       finalStep.classList.add('active');
       finalStep.setAttribute('tabindex','0');
       finalStep.focus();
-      // Highlight both images with glowing border
-      finalImages.forEach(img => {
-        img.classList.add('glow');
+      let delay = 0;
+      finalImages.forEach((img,i) => {
+        setTimeout(() => {
+          boomBlastAnimation(img,i === finalImages.length-1 ? () => {
+            // Add glow after animations
+            finalImages.forEach(im => im.classList.add('glow'));
+          } : null);
+        }, delay);
+        delay += 350;
       });
-      // Disable clicking hearts
-      hearts.forEach(h => {
-        h.style.pointerEvents = 'none';
-      });
-    }
-    // Close final step to open second step with images pic1/pic2
-    function openSecondStep() {
-      finalStep.classList.remove('active');
-      secondStep.classList.add('active');
-      secondStep.setAttribute('tabindex','0');
-      secondStep.focus();
-      // Remove glow from final images
-      finalImages.forEach(img => img.classList.remove('glow'));
-    }
-    // Close second step and end flow
-    function closeSecondStep() {
-      secondStep.classList.remove('active');
-      // Optionally allow hearts again (or keep disabled)
-      // hearts.forEach(h => {
-      //   h.style.pointerEvents = 'auto';
-      // });
-      alert("Thank you for playing! ❤️");
     }
 
-    // Click handlers for final images - show alert or just proceed to second step
+    // Final images click - animate & open second step
     finalImages.forEach(img => {
       img.addEventListener('click', () => {
-        // Animate clicked image bigger and glowing stronger
-        finalImages.forEach(i => i.classList.remove('glow'));
+        finalImages.forEach(i => {
+          i.classList.remove('glow');
+          i.style.transform = '';
+        });
         img.classList.add('glow');
-        img.style.transition = "transform 0.3s ease";
-        img.style.transform = "scale(1.15)";
-        // Show line is already displayed
+        img.style.transform = "scale(1.18)";
         setTimeout(() => {
+          finalStep.classList.remove('active');
           openSecondStep();
-          // Reset transform for final images (to avoid weird residual transforms)
-          finalImages.forEach(i => {
-            i.style.transform = "";
-            i.style.transition = "";
-          });
-        }, 800);
+        }, 900);
       });
-      img.addEventListener('keydown', e => {
-        if(e.key === "Enter" || e.key === " ") {
+      img.addEventListener('keydown', e =>{
+        if(e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           img.click();
         }
       });
     });
 
-    // Click handlers for second step images
+    // Open second step
+    function openSecondStep() {
+      secondStep.classList.add('active');
+      secondStep.setAttribute('tabindex','0');
+      secondStep.focus();
+      finalImages.forEach(i => i.classList.remove('glow'));
+    }
+    // Close second step with thank you alert
+    function closeSecondStep() {
+      secondStep.classList.remove('active');
+      alert("Thank you for playing! ❤️");
+    }
+    // Second images click logic
     secondImages.forEach(cont => {
       cont.addEventListener('click', () => {
-        // Animate selected image
         secondImages.forEach(c => {
-          c.querySelector('img').style.filter = "grayscale(100%)";
+          c.querySelector('img').style.filter = 'grayscale(100%)';
           c.setAttribute('aria-pressed', 'false');
         });
-        cont.querySelector('img').style.filter = "none";
+        cont.querySelector('img').style.filter = 'none';
         cont.setAttribute('aria-pressed', 'true');
-
-        // After short delay, close second step with message
-        setTimeout(() => {
-          closeSecondStep();
-        }, 1000);
+        setTimeout(closeSecondStep, 900);
       });
       cont.addEventListener('keydown', e => {
         if(e.key === 'Enter' || e.key === ' ') {
@@ -764,35 +878,35 @@
       });
     });
 
-    // Accessibility: close modal with ESC key
+    // Close modals on ESC
     overlay.addEventListener('keydown', e => {
       if (e.key === 'Escape') closeModal();
     });
-    finalStep.addEventListener('keydown', e =>{
-      if(e.key === 'Escape') {
+    finalStep.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
         finalStep.classList.remove('active');
         hearts.forEach(h => h.style.pointerEvents = 'auto');
       }
     });
-    secondStep.addEventListener('keydown', e =>{
-      if(e.key === 'Escape') {
+    secondStep.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
         secondStep.classList.remove('active');
         hearts.forEach(h => h.style.pointerEvents = 'auto');
       }
     });
 
-    // Open questions on heart click or keyboard enter/space
+    // Falling hearts click to open modal
     hearts.forEach(heart => {
       heart.addEventListener('click', openModal);
       heart.addEventListener('keydown', e => {
-        if (e.key === "Enter" || e.key === " ") {
+        if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           openModal();
         }
       });
     });
 
-    // Focus trap inside modals (basic)
+    // Focus trap basic inside modal/overlays
     document.addEventListener('focus', e => {
       if (overlay.classList.contains('active') && !overlay.contains(e.target)) {
         e.stopPropagation();
@@ -807,7 +921,6 @@
         secondStep.focus();
       }
     }, true);
-
   })();
 </script>
 
